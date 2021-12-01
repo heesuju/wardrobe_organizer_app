@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
 
 public class SubActivity extends AppCompatActivity {
     EditText edit1, edit2, edit3, edit4, edit5;
@@ -22,6 +25,23 @@ public class SubActivity extends AppCompatActivity {
         edit3 = (EditText) findViewById(R.id.edit3);
         edit4 = (EditText) findViewById(R.id.edit4);
         edit5 = (EditText) findViewById(R.id.edit5);
+
+        final String[] select_qualification = {
+                "Select Qualification", "10th / Below", "12th", "Diploma", "UG",
+                "PG", "Phd"};
+        Spinner spinner = (Spinner) findViewById(R.id.type_spinner);
+
+        ArrayList<StateVO> listVOs = new ArrayList<>();
+
+        for (int i = 0; i < select_qualification.length; i++) {
+            StateVO stateVO = new StateVO();
+            stateVO.setTitle(select_qualification[i]);
+            stateVO.setSelected(false);
+            listVOs.add(stateVO);
+        }
+        SpinnerAdapter myAdapter = new SpinnerAdapter(SubActivity.this, 0,
+                listVOs);
+        spinner.setAdapter(myAdapter);
 
         Button buttonSave = (Button) findViewById(R.id.button_save);
         Button buttonUpdate = (Button) findViewById(R.id.button_update);
