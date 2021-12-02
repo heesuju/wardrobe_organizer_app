@@ -11,15 +11,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="유형" />
+            android:text="종류" />
         <EditText
             android:id="@+id/edit1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Spinner
-            android:id="@+id/type_spinner"
+            android:id="@+id/category_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             />
     </LinearLayout>
     <LinearLayout

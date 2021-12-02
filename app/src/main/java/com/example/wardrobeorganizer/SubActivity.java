@@ -3,45 +3,34 @@ package com.example.wardrobeorganizer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
-public class SubActivity extends AppCompatActivity {
+public class SubActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     EditText edit1, edit2, edit3, edit4, edit5;
     String id;
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
-
+        spinner = (Spinner) findViewById(R.id.category_spinner);
         edit1 = (EditText) findViewById(R.id.edit1);
         edit2 = (EditText) findViewById(R.id.edit2);
         edit3 = (EditText) findViewById(R.id.edit3);
         edit4 = (EditText) findViewById(R.id.edit4);
         edit5 = (EditText) findViewById(R.id.edit5);
-
-        final String[] select_qualification = {
-                "Select Qualification", "10th / Below", "12th", "Diploma", "UG",
-                "PG", "Phd"};
-        Spinner spinner = (Spinner) findViewById(R.id.type_spinner);
-
-        ArrayList<StateVO> listVOs = new ArrayList<>();
-
-        for (int i = 0; i < select_qualification.length; i++) {
-            StateVO stateVO = new StateVO();
-            stateVO.setTitle(select_qualification[i]);
-            stateVO.setSelected(false);
-            listVOs.add(stateVO);
-        }
-        SpinnerAdapter myAdapter = new SpinnerAdapter(SubActivity.this, 0,
-                listVOs);
-        spinner.setAdapter(myAdapter);
+        populateSpinnerCategory();
+        spinner.setOnItemSelectedListener(this);
 
         Button buttonSave = (Button) findViewById(R.id.button_save);
         Button buttonUpdate = (Button) findViewById(R.id.button_update);
@@ -110,4 +99,23 @@ public class SubActivity extends AppCompatActivity {
             }
         });
     } // of onCreate()
+
+    private void populateSpinnerCategory() {
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.category_array));
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(categoryAdapter);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int i, long l) {
+        if(parent.getId() == R.id.category_spinner){
+            String selected = parent.getSelectedItem().toString();
+            Toast.makeText(this, "selected" + selected, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
 }
