@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -75,9 +77,9 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                if (ContextCompat.checkSelfPermission(SubActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
                 {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+                    ActivityCompat.requestPermissions(SubActivity.this, new String[]{"Manifest.permission.CAMERA"}, MY_CAMERA_PERMISSION_CODE);
                 }
                 else
                 {
@@ -95,7 +97,13 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 intent.putExtra("INPUT_MATERIAL", spinner_material.getSelectedItem().toString());
                 intent.putExtra("INPUT_BRAND", edit_brand.getText().toString());
                 intent.putExtra("INPUT_STATE", spinner_state.getSelectedItem().toString());
-
+                //Bitmap b = BitmapFactory.decodeResource(getResources(), R.id.image);
+                /*create the object of ByteArrayoutputStream class. Now break the image into the byte parts by calling toByteArray() of ByteOutputStream class and store it in a array */
+                //ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                //b.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                //byte[] img = bos.toByteArray();
+                /*to write in a database call the getWritableDatabase method */
+                //intent.putExtra("INPUT_IMAGE", img);
                 setResult(RESULT_OK, intent);
                 finish();
             }
