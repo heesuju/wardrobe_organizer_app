@@ -1,12 +1,19 @@
 <resources>
     <string name="app_name">WardrobeOrganizer</string>
+    <string name="btn_add">Add</string>
+    <string name="category">종류</string>
+    <string name="material">소재</string>
+    <string name="brand">브랜드</string>
+    <string name="state">상태</string>
+    <string name="worn">입은 날짜</string>
+    <string name="save">저장</string>
+    <string name="cancel">취소</string>
     <string-array name="category_array">
         <item>상의</item>
         <item>하의</item>
         <item>아우터</item>
         <item>원피스</item>
     </string-array>
-
     <string-array name="material_array">
         <item>니트</item>
         <item>후리스</item>
@@ -15,7 +22,6 @@
         <item>데님</item>
         <item>퍼</item>
     </string-array>
-
     <string-array name="state_array">
         <item>정리된 상태</item>
         <item>꺼내진 상태</item>

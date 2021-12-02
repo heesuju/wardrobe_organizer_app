@@ -43,11 +43,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void printDb() {
-        Cursor cursor = db.rawQuery("SELECT * FROM contacts", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM wardrobe", null);
         startManagingCursor(cursor);
 
-        String[] from = {"name", "year", "pd", "score", "nation"};
-        int[] to = {R.id.name, R.id.year, R.id.pd, R.id.score, R.id.nation};
+        String[] from = {"category", "material", "brand", "state"};
+        int[] to = {R.id.category, R.id.material, R.id.brand, R.id.state};
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.list_item, cursor, from, to);
@@ -59,23 +59,21 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, SubActivity.class);
                 intent.putExtra("ACTION_REQUEST", "UPDATE");
-                Cursor cursor = db.rawQuery("SELECT * FROM contacts WHERE _id = "
+                Cursor cursor = db.rawQuery("SELECT * FROM wardrobe WHERE _id = "
                                 + id + ";"
                         , null);
 
                 if (cursor.moveToFirst()) {
                     String rowId = cursor.getString(cursor.getColumnIndex("_id"));
-                    String name = cursor.getString(cursor.getColumnIndex("name"));
-                    String year = cursor.getString(cursor.getColumnIndex("year"));
-                    String pd = cursor.getString(cursor.getColumnIndex("pd"));
-                    String score = cursor.getString(cursor.getColumnIndex("score"));
-                    String nation = cursor.getString(cursor.getColumnIndex("nation"));
+                    String category = cursor.getString(cursor.getColumnIndex("category"));
+                    String material = cursor.getString(cursor.getColumnIndex("material"));
+                    String brand = cursor.getString(cursor.getColumnIndex("brand"));
+                    String state = cursor.getString(cursor.getColumnIndex("state"));
                     intent.putExtra("ID", rowId);
-                    intent.putExtra("NAME", name);
-                    intent.putExtra("YEAR", year);
-                    intent.putExtra("PD", pd);
-                    intent.putExtra("SCORE", score);
-                    intent.putExtra("NATION", nation);
+                    intent.putExtra("CATEGORY", category);
+                    intent.putExtra("MATERIAL", material);
+                    intent.putExtra("BRAND", brand);
+                    intent.putExtra("STATE", state);
                     startActivityForResult(intent, GET_STRING);
                 }
             }
@@ -88,28 +86,26 @@ public class MainActivity extends AppCompatActivity {
 
             switch (data.getStringExtra("ACTION_RESULT")) {
                 case "CREATE":
-                    db.execSQL("INSERT INTO contacts VALUES (null, " +
-                            "'" + data.getStringExtra("INPUT_NAME") + "', " +
-                            "'" + data.getStringExtra("INPUT_YEAR") + "', " +
-                            "'" + data.getStringExtra("INPUT_PD") + "', " +
-                            "'" + data.getStringExtra("INPUT_SCORE") + "', " +
-                            "'" + data.getStringExtra("INPUT_NATION") + "');"
+                    db.execSQL("INSERT INTO wardrobe VALUES (null, " +
+                            "'" + data.getStringExtra("INPUT_CATEGORY") + "', " +
+                            "'" + data.getStringExtra("INPUT_MATERIAL") + "', " +
+                            "'" + data.getStringExtra("INPUT_BRAND") + "', " +
+                            "'" + data.getStringExtra("INPUT_STATE") + "');"
                     );
                     printDb();
                     break;
                 case "UPDATE":
-                    db.execSQL("UPDATE contacts SET " +
-                            "name = '" + data.getStringExtra("INPUT_NAME") + "', " +
-                            "year = '" + data.getStringExtra("INPUT_YEAR") + "', " +
-                            "pd = '" + data.getStringExtra("INPUT_PD") + "', " +
-                            "score = '" + data.getStringExtra("INPUT_SCORE") + "', " +
-                            "nation = '" + data.getStringExtra("INPUT_NATION") + "' " +
+                    db.execSQL("UPDATE wardrobe SET " +
+                            "'" + data.getStringExtra("INPUT_CATEGORY") + "', " +
+                            "'" + data.getStringExtra("INPUT_MATERIAL") + "', " +
+                            "'" + data.getStringExtra("INPUT_BRAND") + "', " +
+                            "'" + data.getStringExtra("INPUT_STATE") + "' " +
                             "WHERE _id = '" + data.getStringExtra("ID") + "';"
                     );
                     printDb();
                     break;
                 case "DELETE":
-                    db.execSQL("DELETE FROM contacts WHERE _id = " +
+                    db.execSQL("DELETE FROM wardrobe WHERE _id = " +
                             "'" + data.getStringExtra("ID") + "';"
                     );
                     printDb();

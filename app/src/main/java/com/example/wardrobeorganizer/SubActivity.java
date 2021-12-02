@@ -12,28 +12,27 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
-
 public class SubActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    EditText edit1, edit2, edit3, edit4, edit5;
+    EditText edit_brand;
     String id;
-    Spinner spinner;
+    Spinner spinner_category, spinner_material, spinner_state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
-        spinner = (Spinner) findViewById(R.id.category_spinner);
-        edit1 = (EditText) findViewById(R.id.edit1);
-        edit2 = (EditText) findViewById(R.id.edit2);
-        edit3 = (EditText) findViewById(R.id.edit3);
-        edit4 = (EditText) findViewById(R.id.edit4);
-        edit5 = (EditText) findViewById(R.id.edit5);
+        spinner_category = findViewById(R.id.spinner_category);
+        spinner_material = findViewById(R.id.spinner_material);
+        spinner_state = findViewById(R.id.spinner_state);
+        edit_brand = findViewById(R.id.edit_brand);
         populateSpinnerCategory();
-        spinner.setOnItemSelectedListener(this);
+        populateSpinnerMaterial();
+        populateSpinnerState();
+        spinner_category.setOnItemSelectedListener(this);
+        spinner_material.setOnItemSelectedListener(this);
+        spinner_state.setOnItemSelectedListener(this);
 
         Button buttonSave = (Button) findViewById(R.id.button_save);
-        Button buttonUpdate = (Button) findViewById(R.id.button_update);
         Button buttonDelete = (Button) findViewById(R.id.button_delete);
 
         Intent intent = getIntent();
@@ -41,20 +40,9 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         switch (actionRequest) {
             case "CREATE":
                 buttonSave.setVisibility(View.VISIBLE);
-                buttonUpdate.setVisibility(View.INVISIBLE);
                 buttonDelete.setVisibility(View.INVISIBLE);
                 break;
             case "UPDATE":
-                buttonSave.setVisibility(View.INVISIBLE);
-                buttonUpdate.setVisibility(View.VISIBLE);
-                buttonDelete.setVisibility(View.VISIBLE);
-
-                id = intent.getStringExtra("ID");
-                edit1.setText(intent.getStringExtra("NAME"));
-                edit2.setText(intent.getStringExtra("YEAR"));
-                edit3.setText(intent.getStringExtra("PD"));
-                edit4.setText(intent.getStringExtra("SCORE"));
-                edit5.setText(intent.getStringExtra("NATION"));
                 break;
         }
 
@@ -63,31 +51,16 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.putExtra("ACTION_RESULT", "CREATE");
-                intent.putExtra("INPUT_NAME", edit1.getText().toString());
-                intent.putExtra("INPUT_YEAR", edit2.getText().toString());
-                intent.putExtra("INPUT_PD", edit3.getText().toString());
-                intent.putExtra("INPUT_SCORE", edit4.getText().toString());
-                intent.putExtra("INPUT_NATION", edit5.getText().toString());
+                intent.putExtra("INPUT_CATEGORY", spinner_category.getSelectedItem().toString());
+                intent.putExtra("INPUT_MATERIAL", spinner_material.getSelectedItem().toString());
+                intent.putExtra("INPUT_BRAND", edit_brand.getText().toString());
+                intent.putExtra("INPUT_STATE", spinner_state.getSelectedItem().toString());
 
                 setResult(RESULT_OK, intent);
                 finish();
             }
         });
-        buttonUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.putExtra("ACTION_RESULT", "UPDATE");
-                intent.putExtra("ID", id);
-                intent.putExtra("INPUT_NAME", edit1.getText().toString());
-                intent.putExtra("INPUT_YEAR", edit2.getText().toString());
-                intent.putExtra("INPUT_PD", edit3.getText().toString());
-                intent.putExtra("INPUT_SCORE", edit4.getText().toString());
-                intent.putExtra("INPUT_NATION", edit5.getText().toString());
-                setResult(RESULT_OK, intent);
-                finish();
-            }
-        });
+
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,14 +74,34 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     } // of onCreate()
 
     private void populateSpinnerCategory() {
-        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.category_array));
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(categoryAdapter);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.category_array));
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_category.setAdapter(arrayAdapter);
+    }
+
+    private void populateSpinnerMaterial() {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.material_array));
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_material.setAdapter(arrayAdapter);
+    }
+
+    private void populateSpinnerState() {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.state_array));
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_state.setAdapter(arrayAdapter);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int i, long l) {
-        if(parent.getId() == R.id.category_spinner){
+        if(parent.getId() == R.id.spinner_category){
+            String selected = parent.getSelectedItem().toString();
+            Toast.makeText(this, "selected" + selected, Toast.LENGTH_SHORT).show();
+        }
+        else if(parent.getId() == R.id.spinner_material){
+            String selected = parent.getSelectedItem().toString();
+            Toast.makeText(this, "selected" + selected, Toast.LENGTH_SHORT).show();
+        }
+        else if(parent.getId() == R.id.spinner_state){
             String selected = parent.getSelectedItem().toString();
             Toast.makeText(this, "selected" + selected, Toast.LENGTH_SHORT).show();
         }

@@ -6,44 +6,35 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="17dp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/score"
+        android:id="@+id/material"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/name"
+        android:layout_below="@id/category"
         android:layout_marginTop="1dip"
         android:textSize="15dp" />
 
     <TextView
-        android:id="@+id/pd"
+        android:id="@+id/brand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/score"
+        android:layout_below="@id/material"
         android:layout_marginTop="1dip"
         android:textSize="15dp" />
 
     <TextView
-        android:id="@+id/nation"
+        android:id="@+id/state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/pd"
+        android:layout_below="@id/brand"
         android:layout_marginTop="5dp"
         android:textColor="#666666"
         android:textSize="15dp" />
-
-    <TextView
-        android:id="@+id/year"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:textColor="#888888"
-        android:textSize="12dip" />
 
 </RelativeLayout>
