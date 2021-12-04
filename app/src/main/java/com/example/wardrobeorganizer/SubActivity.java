@@ -68,6 +68,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         spinner_state.setOnItemSelectedListener(this);
 
         Button buttonSave = (Button) findViewById(R.id.button_save);
+        Button buttonUpdate = (Button) findViewById(R.id.button_update);
         Button buttonDelete = (Button) findViewById(R.id.button_delete);
 
         Intent intent = getIntent();
@@ -75,9 +76,21 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         switch (actionRequest) {
             case "CREATE":
                 buttonSave.setVisibility(View.VISIBLE);
+                buttonUpdate.setVisibility(View.INVISIBLE);
                 buttonDelete.setVisibility(View.INVISIBLE);
                 break;
             case "UPDATE":
+                buttonSave.setVisibility(View.INVISIBLE);
+                buttonUpdate.setVisibility(View.VISIBLE);
+                buttonDelete.setVisibility(View.VISIBLE);
+
+                id = intent.getStringExtra("ID");
+                spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition(intent.getStringExtra("CATEGORY")));
+                spinner_material.setSelection(((ArrayAdapter)spinner_material.getAdapter()).getPosition(intent.getStringExtra("MATERIAL")));
+                spinner_state.setSelection(((ArrayAdapter)spinner_state.getAdapter()).getPosition(intent.getStringExtra("STATE")));
+                edit_brand.setText(intent.getStringExtra("BRAND"));
+                Bitmap bitmap = BitmapFactory.decodeFile(intent.getStringExtra("IMAGE"));
+                image.setImageBitmap(bitmap);
                 break;
         }
         btnAlbum.setOnClickListener(new View.OnClickListener() {
@@ -115,13 +128,32 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 isReadStoragePermissionGranted();
                 //always save as
                 Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-                String dir = saveImage(bitmap, edit_brand.getText().toString());
+                String dir = saveImage(bitmap, id);
                 intent.putExtra("INPUT_IMAGE", dir);
                 setResult(RESULT_OK, intent);
                 finish();
             }
         });
-
+        buttonUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.putExtra("ACTION_RESULT", "UPDATE");
+                intent.putExtra("ID", id);
+                intent.putExtra("INPUT_CATEGORY", spinner_category.getSelectedItem().toString());
+                intent.putExtra("INPUT_MATERIAL", spinner_material.getSelectedItem().toString());
+                intent.putExtra("INPUT_BRAND", edit_brand.getText().toString());
+                intent.putExtra("INPUT_STATE", spinner_state.getSelectedItem().toString());
+                isWriteStoragePermissionGranted();
+                isReadStoragePermissionGranted();
+                //always save as
+                Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+                String dir = saveImage(bitmap, id);
+                intent.putExtra("INPUT_IMAGE", dir);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,6 +214,9 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
             Log.w(TAG, "Didn't work");
         }
         File file = new File(dir, fileName + ".jpg");
+        if (file.exists()) {
+            file.delete();
+        }
         if (!file.exists()) {
             Log.d("path", file.toString());
             FileOutputStream fos = null;

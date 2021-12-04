@@ -127,11 +127,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case "UPDATE":
                     db.execSQL("UPDATE wardrobe SET " +
-                            "'" + data.getStringExtra("INPUT_CATEGORY") + "', " +
-                            "'" + data.getStringExtra("INPUT_MATERIAL") + "', " +
-                            "'" + data.getStringExtra("INPUT_BRAND") + "', " +
-                            "'" + data.getStringExtra("INPUT_STATE") + "', " +
-                            "'" + data.getStringExtra("INPUT_IMAGE") + "' " +
+                            "category = '" + data.getStringExtra("INPUT_CATEGORY") + "', " +
+                            "material = '" + data.getStringExtra("INPUT_MATERIAL") + "', " +
+                            "brand = '" + data.getStringExtra("INPUT_BRAND") + "', " +
+                            "state = '" + data.getStringExtra("INPUT_STATE") + "', " +
+                            "image = '" + data.getStringExtra("INPUT_IMAGE") + "' " +
                             "WHERE _id = '" + data.getStringExtra("ID") + "';"
                     );
                     printDb();
