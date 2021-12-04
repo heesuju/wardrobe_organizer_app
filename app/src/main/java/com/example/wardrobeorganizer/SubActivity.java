@@ -1,12 +1,20 @@
 package com.example.wardrobeorganizer;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,8 +29,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class SubActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     EditText edit_brand;
@@ -79,7 +93,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(SubActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
                 {
-                    ActivityCompat.requestPermissions(SubActivity.this, new String[]{"Manifest.permission.CAMERA"}, MY_CAMERA_PERMISSION_CODE);
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
                 }
                 else
                 {
@@ -97,13 +111,12 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 intent.putExtra("INPUT_MATERIAL", spinner_material.getSelectedItem().toString());
                 intent.putExtra("INPUT_BRAND", edit_brand.getText().toString());
                 intent.putExtra("INPUT_STATE", spinner_state.getSelectedItem().toString());
-                //Bitmap b = BitmapFactory.decodeResource(getResources(), R.id.image);
-                /*create the object of ByteArrayoutputStream class. Now break the image into the byte parts by calling toByteArray() of ByteOutputStream class and store it in a array */
-                //ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                //b.compress(Bitmap.CompressFormat.PNG, 100, bos);
-                //byte[] img = bos.toByteArray();
-                /*to write in a database call the getWritableDatabase method */
-                //intent.putExtra("INPUT_IMAGE", img);
+                isWriteStoragePermissionGranted();
+                isReadStoragePermissionGranted();
+                //always save as
+                Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+                String dir = saveImage(bitmap, edit_brand.getText().toString());
+                intent.putExtra("INPUT_IMAGE", dir);
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -120,6 +133,71 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
             }
         });
     } // of onCreate()
+    public  boolean isReadStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG,"Permission is granted1");
+                return true;
+            } else {
+
+                Log.v(TAG,"Permission is revoked1");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG,"Permission is granted1");
+            return true;
+        }
+    }
+
+    public  boolean isWriteStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG,"Permission is granted2");
+                return true;
+            } else {
+
+                Log.v(TAG,"Permission is revoked2");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG,"Permission is granted2");
+            return true;
+        }
+    }
+
+    public String saveImage(Bitmap bitmap, String fileName){
+        File fullPath = Environment.getExternalStorageDirectory();
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        File ex = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File dir = new File(ex, "Example");
+        if(!dir.exists()){
+            dir.mkdirs();
+        }else{
+            Log.w(TAG, "Didn't work");
+        }
+        File file = new File(dir, fileName + ".jpg");
+        if (!file.exists()) {
+            Log.d("path", file.toString());
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.flush();
+                fos.close();
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+                Log.d("what", file.toString());
+            }
+        }
+        return file.getAbsolutePath();
+    }
+
 
     private void populateSpinnerCategory() {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.category_array));
@@ -194,8 +272,8 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         }
         else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK)
         {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            image.setImageBitmap(photo);
+            Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
+            image.setImageBitmap(selectedImage);
         }
     }
 

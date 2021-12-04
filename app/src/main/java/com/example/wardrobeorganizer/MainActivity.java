@@ -1,16 +1,29 @@
 package com.example.wardrobeorganizer;
-import androidx.appcompat.app.AppCompatActivity;
+import static android.content.ContentValues.TAG;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,15 +52,30 @@ public class MainActivity extends AppCompatActivity {
         } catch (SQLiteException ex) {
             db = helper.getReadableDatabase();
         }
-        printDb();
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG,"Permission is granted1");
+                printDb();
+            } else {
+
+                Log.v(TAG,"Permission is revoked1");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG,"Permission is granted1");
+            printDb();
+        }
+
     }
 
     private void printDb() {
         Cursor cursor = db.rawQuery("SELECT * FROM wardrobe", null);
         startManagingCursor(cursor);
 
-        String[] from = {"category", "material", "brand", "state"};
-        int[] to = {R.id.category, R.id.material, R.id.brand, R.id.state};
+        String[] from = {"category", "material", "brand", "state", "image"};
+        int[] to = {R.id.category, R.id.material, R.id.brand, R.id.state, R.id.image};
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.list_item, cursor, from, to);
@@ -69,11 +97,13 @@ public class MainActivity extends AppCompatActivity {
                     String material = cursor.getString(cursor.getColumnIndex("material"));
                     String brand = cursor.getString(cursor.getColumnIndex("brand"));
                     String state = cursor.getString(cursor.getColumnIndex("state"));
+                    String image = cursor.getString(cursor.getColumnIndex("image"));
                     intent.putExtra("ID", rowId);
                     intent.putExtra("CATEGORY", category);
                     intent.putExtra("MATERIAL", material);
                     intent.putExtra("BRAND", brand);
                     intent.putExtra("STATE", state);
+                    intent.putExtra("IMAGE", image);
                     startActivityForResult(intent, GET_STRING);
                 }
             }
@@ -90,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
                             "'" + data.getStringExtra("INPUT_CATEGORY") + "', " +
                             "'" + data.getStringExtra("INPUT_MATERIAL") + "', " +
                             "'" + data.getStringExtra("INPUT_BRAND") + "', " +
-                            "'" + data.getStringExtra("INPUT_STATE") + "');"
+                            "'" + data.getStringExtra("INPUT_STATE") + "', " +
+                            "'" + data.getStringExtra("INPUT_IMAGE") + "');"
                     );
                     printDb();
                     break;
@@ -99,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
                             "'" + data.getStringExtra("INPUT_CATEGORY") + "', " +
                             "'" + data.getStringExtra("INPUT_MATERIAL") + "', " +
                             "'" + data.getStringExtra("INPUT_BRAND") + "', " +
-                            "'" + data.getStringExtra("INPUT_STATE") + "' " +
+                            "'" + data.getStringExtra("INPUT_STATE") + "', " +
+                            "'" + data.getStringExtra("INPUT_IMAGE") + "' " +
                             "WHERE _id = '" + data.getStringExtra("ID") + "';"
                     );
                     printDb();
