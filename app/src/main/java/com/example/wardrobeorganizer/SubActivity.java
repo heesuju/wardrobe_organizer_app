@@ -2,6 +2,7 @@ package com.example.wardrobeorganizer;
 
 import static android.content.ContentValues.TAG;
 
+
 import android.Manifest;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -22,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -42,8 +45,10 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     EditText edit_brand;
     String id;
     Spinner spinner_category, spinner_material, spinner_state, spinner_color;
-    Button btnCamera, btnAlbum;
+    Button btnCamera, btnAlbum, btnWear;
     ImageView image;
+    TextView text_worn;
+    long date_time;
     public static final int PICK_IMAGE = 1;
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
@@ -57,7 +62,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         spinner_material = findViewById(R.id.spinner_material);
         spinner_state = findViewById(R.id.spinner_state);
         edit_brand = findViewById(R.id.edit_brand);
-
+        text_worn = findViewById(R.id.text_worn);
         btnAlbum = findViewById(R.id.button_album);
         btnCamera = findViewById(R.id.button_camera);
         image = findViewById(R.id.image);
@@ -72,6 +77,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         Button buttonSave = (Button) findViewById(R.id.button_save);
         Button buttonUpdate = (Button) findViewById(R.id.button_update);
         Button buttonDelete = (Button) findViewById(R.id.button_delete);
+        btnWear = findViewById(R.id.button_wear);
 
         Intent intent = getIntent();
         String actionRequest = intent.getStringExtra("ACTION_REQUEST");
@@ -80,11 +86,13 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 buttonSave.setVisibility(View.VISIBLE);
                 buttonUpdate.setVisibility(View.INVISIBLE);
                 buttonDelete.setVisibility(View.INVISIBLE);
+                text_worn.setVisibility(View.INVISIBLE);
                 break;
             case "UPDATE":
                 buttonSave.setVisibility(View.INVISIBLE);
                 buttonUpdate.setVisibility(View.VISIBLE);
                 buttonDelete.setVisibility(View.VISIBLE);
+                text_worn.setVisibility(View.VISIBLE);
 
                 id = intent.getStringExtra("ID");
                 spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition(intent.getStringExtra("CATEGORY")));
@@ -92,6 +100,9 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 spinner_state.setSelection(((ArrayAdapter)spinner_state.getAdapter()).getPosition(intent.getStringExtra("STATE")));
                 spinner_color.setSelection(((ArrayAdapter)spinner_color.getAdapter()).getPosition(intent.getStringExtra("COLOR")));
                 edit_brand.setText(intent.getStringExtra("BRAND"));
+                date_time = intent.getLongExtra("WORN", 0);
+                String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format((intent.getLongExtra("WORN", 0)));
+                text_worn.setText(date);
                 Bitmap bitmap = BitmapFactory.decodeFile(intent.getStringExtra("IMAGE"));
                 image.setImageBitmap(bitmap);
                 break;
@@ -134,6 +145,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 String dir = saveImage(bitmap, id);
                 intent.putExtra("INPUT_IMAGE", dir);
                 intent.putExtra("INPUT_COLOR", spinner_color.getSelectedItem().toString());
+                intent.putExtra("INPUT_WORN", 0);
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -155,6 +167,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 String dir = saveImage(bitmap, id);
                 intent.putExtra("INPUT_IMAGE", dir);
                 intent.putExtra("INPUT_COLOR", spinner_color.getSelectedItem().toString());
+                intent.putExtra("INPUT_WORN", date_time);
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -165,6 +178,17 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 Intent intent = new Intent();
                 intent.putExtra("ACTION_RESULT", "DELETE");
                 intent.putExtra("ID", id);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+        btnWear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.putExtra("ACTION_RESULT", "WEAR");
+                intent.putExtra("ID", id);
+                intent.putExtra("INPUT_WORN", System.currentTimeMillis());
                 setResult(RESULT_OK, intent);
                 finish();
             }

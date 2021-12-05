@@ -51,4 +51,12 @@
         android:layout_marginTop="5dp"
         android:textColor="#666666"
         android:textSize="15dp" />
+    <TextView
+        android:id="@+id/worn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/color"
+        android:layout_marginTop="5dp"
+        android:textColor="#666666"
+        android:textSize="15dp" />
 </RelativeLayout>

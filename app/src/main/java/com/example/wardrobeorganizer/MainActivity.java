@@ -31,7 +31,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     DatabaseHelper helper;
     SQLiteDatabase db;
     EditText edit_brand;
-    Spinner spinner_category, spinner_material, spinner_state, spinner_color;
+    Spinner spinner_category, spinner_material, spinner_state, spinner_color, spinner_date;
     Button btnSearch, btnClear;
     List<String> filterValues;
 
@@ -51,10 +53,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner_category = findViewById(R.id.spinner_category);
         spinner_material = findViewById(R.id.spinner_material);
         spinner_state = findViewById(R.id.spinner_state);
+        spinner_date = findViewById(R.id.spinner_date);
         populateSpinnerColor();
         populateSpinnerCategory();
         populateSpinnerMaterial();
         populateSpinnerState();
+        populateSpinnerDate();
         edit_brand = findViewById(R.id.edit_brand);
         btnSearch= findViewById(R.id.button_search);
         btnClear = findViewById(R.id.button_clear);
@@ -115,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         String brand = edit_brand.getText().toString();
         String state = spinner_state.getSelectedItem().toString();
         String color = spinner_color.getSelectedItem().toString();
+        String date = spinner_date.getSelectedItem().toString();
         StringBuilder filter = new StringBuilder(100);
         if(!category.equals("모두")) {
             filter.append("category = ?");
@@ -148,6 +153,66 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             filter.append("state = ?");
             filterValues.add(state);
         }
+        if(!date.equals("전체")) {
+            if(filter.length() > 0) {
+                filter.append(" AND ");
+            }
+            TimeZone tz = TimeZone.getDefault();
+            long time = System.currentTimeMillis();
+            switch (date) {
+                case "오늘":
+                    time = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000) + 86400000;
+                    time -= tz.getOffset(time);
+                    System.out.println(new Date(time));
+                    filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
+                    break;
+                case "어제":
+                    time = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000);
+                    time -= tz.getOffset(time);
+                    System.out.println(new Date(time));
+                    filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
+                    break;
+                case "1주":
+                    time = System.currentTimeMillis() - ((86400000*6) + System.currentTimeMillis() % 86400000);
+                    time -= tz.getOffset(time);
+                    System.out.println(new Date(time));
+                    filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
+                    break;
+                case "1개월":
+                    time = System.currentTimeMillis() - ((86400000L*30L) + System.currentTimeMillis() % 86400000);
+                    time -= tz.getOffset(time);
+                    System.out.println(new Date(time));
+                    filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
+                    break;
+                case "3개월":
+                    time = System.currentTimeMillis() - ((86400000L*90L) + System.currentTimeMillis() % 86400000);
+                    time -= tz.getOffset(time);
+                    System.out.println(new Date(time));
+                    filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
+                    break;
+                case "6개월":
+                    time = System.currentTimeMillis() - ((86400000L*180L) + System.currentTimeMillis() % 86400000);
+                    time -= tz.getOffset(time);
+                    System.out.println(new Date(time));
+                    filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
+                    break;
+                case "1년":
+                    time = System.currentTimeMillis() - ((86400000L*365L) + System.currentTimeMillis() % 86400000);
+                    time -= tz.getOffset(time);
+                    System.out.println(new Date(time));
+                    filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
+                    break;
+                case "1년 이상":
+                    time = System.currentTimeMillis() - ((86400000L*365L) + System.currentTimeMillis() % 86400000);
+                    time -= tz.getOffset(time);
+                    System.out.println(new Date(time));
+                    long start = 0L;
+                    filter.append("worn BETWEEN " + start + " AND " + time + " ORDER BY worn ASC");
+                    break;
+                default:
+                    break;
+            }
+        }
         return filter.toString();
     }
 
@@ -164,8 +229,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
         startManagingCursor(cursor);
 
-        String[] from = {"category", "material", "brand", "state", "image", "color"};
-        int[] to = {R.id.category, R.id.material, R.id.brand, R.id.state, R.id.image, R.id.color};
+        String[] from = {"category", "material", "brand", "state", "image", "color", "worn"};
+        int[] to = {R.id.category, R.id.material, R.id.brand, R.id.state, R.id.image, R.id.color, R.id.worn};
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.list_item, cursor, from, to);
@@ -189,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     String state = cursor.getString(cursor.getColumnIndex("state"));
                     String image = cursor.getString(cursor.getColumnIndex("image"));
                     String color = cursor.getString(cursor.getColumnIndex("color"));
+                    long worn = cursor.getLong(cursor.getColumnIndex("worn"));
                     intent.putExtra("ID", rowId);
                     intent.putExtra("CATEGORY", category);
                     intent.putExtra("MATERIAL", material);
@@ -196,6 +262,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     intent.putExtra("STATE", state);
                     intent.putExtra("IMAGE", image);
                     intent.putExtra("COLOR", color);
+                    intent.putExtra("WORN", worn);
                     startActivityForResult(intent, GET_STRING);
                 }
             }
@@ -236,6 +303,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_state.setAdapter(arrayAdapter);
     }
+
+    private void populateSpinnerDate() {
+        List<String> dates = new ArrayList<>();
+        dates.add(0, "전체");
+        dates.addAll(Arrays.asList(getResources().getStringArray(R.array.date_array)));
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dates);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_date.setAdapter(arrayAdapter);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GET_STRING && resultCode == RESULT_OK) {
@@ -248,7 +325,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             "'" + data.getStringExtra("INPUT_BRAND") + "', " +
                             "'" + data.getStringExtra("INPUT_STATE") + "', " +
                             "'" + data.getStringExtra("INPUT_IMAGE") + "', " +
-                            "'" + data.getStringExtra("INPUT_COLOR") + "');"
+                            "'" + data.getStringExtra("INPUT_COLOR") + "', " +
+                            "'" + data.getLongExtra("INPUT_WORN", 0) + "');"
                     );
                     printDb();
                     break;
@@ -259,7 +337,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             "brand = '" + data.getStringExtra("INPUT_BRAND") + "', " +
                             "state = '" + data.getStringExtra("INPUT_STATE") + "', " +
                             "image = '" + data.getStringExtra("INPUT_IMAGE") + "', " +
-                            "records = '" + data.getStringExtra("INPUT_COLOR") + "' " +
+                            "color = '" + data.getStringExtra("INPUT_COLOR") + "', " +
+                            "worn = '" + data.getLongExtra("INPUT_WORN", 0) + "' " +
+                            "WHERE _id = '" + data.getStringExtra("ID") + "';"
+                    );
+                    printDb();
+                    break;
+                case "WEAR":
+                    db.execSQL("UPDATE wardrobe SET " +
+                            "worn = '" + data.getLongExtra("INPUT_WORN", 0) + "' " +
                             "WHERE _id = '" + data.getStringExtra("ID") + "';"
                     );
                     printDb();

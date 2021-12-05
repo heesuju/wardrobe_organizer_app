@@ -44,4 +44,14 @@
         <item>정리</item>
     </string-array>
 
+    <string-array name="date_array">
+        <item>오늘</item>
+        <item>어제</item>
+        <item>1주</item>
+        <item>1개월</item>
+        <item>3개월</item>
+        <item>6개월</item>
+        <item>1년</item>
+        <item>1년 이상</item>
+    </string-array>
 </resources>
