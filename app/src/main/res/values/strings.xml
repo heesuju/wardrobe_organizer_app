@@ -10,6 +10,19 @@
     <string name="save">저장</string>
     <string name="cancel">취소</string>
 
+    <string-array name="color_array">
+        <item>빨간색</item>
+        <item>파란색</item>
+        <item>초록색</item>
+        <item>노란색</item>
+        <item>주황색</item>
+        <item>분홍색</item>
+        <item>보라색</item>
+        <item>남색</item>
+        <item>회색</item>
+        <item>검은색</item>
+    </string-array>
+
     <string-array name="category_array">
         <item>상의</item>
         <item>하의</item>

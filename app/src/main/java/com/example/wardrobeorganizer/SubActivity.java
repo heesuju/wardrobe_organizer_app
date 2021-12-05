@@ -41,7 +41,7 @@ import java.util.Date;
 public class SubActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     EditText edit_brand;
     String id;
-    Spinner spinner_category, spinner_material, spinner_state;
+    Spinner spinner_category, spinner_material, spinner_state, spinner_color;
     Button btnCamera, btnAlbum;
     ImageView image;
     public static final int PICK_IMAGE = 1;
@@ -52,6 +52,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
+        spinner_color = findViewById(R.id.spinner_color);
         spinner_category = findViewById(R.id.spinner_category);
         spinner_material = findViewById(R.id.spinner_material);
         spinner_state = findViewById(R.id.spinner_state);
@@ -60,6 +61,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         btnAlbum = findViewById(R.id.button_album);
         btnCamera = findViewById(R.id.button_camera);
         image = findViewById(R.id.image);
+        populateSpinnerColor();
         populateSpinnerCategory();
         populateSpinnerMaterial();
         populateSpinnerState();
@@ -88,6 +90,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition(intent.getStringExtra("CATEGORY")));
                 spinner_material.setSelection(((ArrayAdapter)spinner_material.getAdapter()).getPosition(intent.getStringExtra("MATERIAL")));
                 spinner_state.setSelection(((ArrayAdapter)spinner_state.getAdapter()).getPosition(intent.getStringExtra("STATE")));
+                spinner_color.setSelection(((ArrayAdapter)spinner_color.getAdapter()).getPosition(intent.getStringExtra("COLOR")));
                 edit_brand.setText(intent.getStringExtra("BRAND"));
                 Bitmap bitmap = BitmapFactory.decodeFile(intent.getStringExtra("IMAGE"));
                 image.setImageBitmap(bitmap);
@@ -130,7 +133,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
                 String dir = saveImage(bitmap, id);
                 intent.putExtra("INPUT_IMAGE", dir);
-                intent.putExtra("INPUT_RECORDS", "");
+                intent.putExtra("INPUT_COLOR", spinner_color.getSelectedItem().toString());
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -151,7 +154,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
                 String dir = saveImage(bitmap, id);
                 intent.putExtra("INPUT_IMAGE", dir);
-                intent.putExtra("INPUT_RECORDS", "");
+                intent.putExtra("INPUT_COLOR", spinner_color.getSelectedItem().toString());
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -233,6 +236,12 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         return file.getAbsolutePath();
     }
 
+    private void populateSpinnerColor() {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.color_array));
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_color.setAdapter(arrayAdapter);
+    }
+
     private void populateSpinnerCategory() {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.category_array));
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -255,15 +264,15 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     public void onItemSelected(AdapterView<?> parent, View view, int i, long l) {
         if(parent.getId() == R.id.spinner_category){
             String selected = parent.getSelectedItem().toString();
-            Toast.makeText(this, "selected" + selected, Toast.LENGTH_SHORT).show();
         }
         else if(parent.getId() == R.id.spinner_material){
             String selected = parent.getSelectedItem().toString();
-            Toast.makeText(this, "selected" + selected, Toast.LENGTH_SHORT).show();
         }
         else if(parent.getId() == R.id.spinner_state){
             String selected = parent.getSelectedItem().toString();
-            Toast.makeText(this, "selected" + selected, Toast.LENGTH_SHORT).show();
+        }
+        else if(parent.getId() == R.id.spinner_color){
+            String selected = parent.getSelectedItem().toString();
         }
     }
 

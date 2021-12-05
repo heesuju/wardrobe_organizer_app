@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     DatabaseHelper helper;
     SQLiteDatabase db;
     EditText edit_brand;
-    Spinner spinner_category, spinner_material, spinner_state;
+    Spinner spinner_category, spinner_material, spinner_state, spinner_color;
     Button btnSearch, btnClear;
     List<String> filterValues;
 
@@ -47,9 +47,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        spinner_color = findViewById(R.id.spinner_color);
         spinner_category = findViewById(R.id.spinner_category);
         spinner_material = findViewById(R.id.spinner_material);
         spinner_state = findViewById(R.id.spinner_state);
+        populateSpinnerColor();
         populateSpinnerCategory();
         populateSpinnerMaterial();
         populateSpinnerState();
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btnClear.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                spinner_color.setSelection(((ArrayAdapter)spinner_color.getAdapter()).getPosition("모두"));
                 spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition("모두"));
                 spinner_material.setSelection(((ArrayAdapter)spinner_material.getAdapter()).getPosition("모두"));
                 spinner_state.setSelection(((ArrayAdapter)spinner_state.getAdapter()).getPosition("모두"));
@@ -111,10 +114,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         String material = spinner_material.getSelectedItem().toString();
         String brand = edit_brand.getText().toString();
         String state = spinner_state.getSelectedItem().toString();
+        String color = spinner_color.getSelectedItem().toString();
         StringBuilder filter = new StringBuilder(100);
         if(!category.equals("모두")) {
             filter.append("category = ?");
             filterValues.add(category);
+        }
+        if(!color.equals("모두")) {
+            if(filter.length() > 0) {
+                filter.append(" AND ");
+            }
+            filter.append("color = ?");
+            filterValues.add(color);
         }
         if(!material.equals("모두")) {
             if(filter.length() > 0) {
@@ -153,8 +164,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
         startManagingCursor(cursor);
 
-        String[] from = {"category", "material", "brand", "state", "image", "records"};
-        int[] to = {R.id.category, R.id.material, R.id.brand, R.id.state, R.id.image, R.id.records};
+        String[] from = {"category", "material", "brand", "state", "image", "color"};
+        int[] to = {R.id.category, R.id.material, R.id.brand, R.id.state, R.id.image, R.id.color};
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.list_item, cursor, from, to);
@@ -177,19 +188,28 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     String brand = cursor.getString(cursor.getColumnIndex("brand"));
                     String state = cursor.getString(cursor.getColumnIndex("state"));
                     String image = cursor.getString(cursor.getColumnIndex("image"));
-                    String records = cursor.getString(cursor.getColumnIndex("records"));
+                    String color = cursor.getString(cursor.getColumnIndex("color"));
                     intent.putExtra("ID", rowId);
                     intent.putExtra("CATEGORY", category);
                     intent.putExtra("MATERIAL", material);
                     intent.putExtra("BRAND", brand);
                     intent.putExtra("STATE", state);
                     intent.putExtra("IMAGE", image);
-                    intent.putExtra("RECORDS", records);
+                    intent.putExtra("COLOR", color);
                     startActivityForResult(intent, GET_STRING);
                 }
             }
         });
     }
+    private void populateSpinnerColor() {
+        List<String> colors = new ArrayList<>();
+        colors.add(0, "모두");
+        colors.addAll(Arrays.asList(getResources().getStringArray(R.array.color_array)));
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, colors);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_color.setAdapter(arrayAdapter);
+    }
+
     private void populateSpinnerCategory() {
         List<String> categories = new ArrayList<>();
         categories.add(0, "모두");
@@ -228,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             "'" + data.getStringExtra("INPUT_BRAND") + "', " +
                             "'" + data.getStringExtra("INPUT_STATE") + "', " +
                             "'" + data.getStringExtra("INPUT_IMAGE") + "', " +
-                            "'" + data.getStringExtra("INPUT_RECORDS") + "');"
+                            "'" + data.getStringExtra("INPUT_COLOR") + "');"
                     );
                     printDb();
                     break;
@@ -239,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             "brand = '" + data.getStringExtra("INPUT_BRAND") + "', " +
                             "state = '" + data.getStringExtra("INPUT_STATE") + "', " +
                             "image = '" + data.getStringExtra("INPUT_IMAGE") + "', " +
-                            "records = '" + data.getStringExtra("INPUT_RECORDS") + "' " +
+                            "records = '" + data.getStringExtra("INPUT_COLOR") + "' " +
                             "WHERE _id = '" + data.getStringExtra("ID") + "';"
                     );
                     printDb();
