@@ -130,6 +130,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
                 String dir = saveImage(bitmap, id);
                 intent.putExtra("INPUT_IMAGE", dir);
+                intent.putExtra("INPUT_RECORDS", "");
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -150,6 +151,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
                 String dir = saveImage(bitmap, id);
                 intent.putExtra("INPUT_IMAGE", dir);
+                intent.putExtra("INPUT_RECORDS", "");
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -207,11 +209,9 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         File fullPath = Environment.getExternalStorageDirectory();
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
         File ex = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File dir = new File(ex, "Example");
-        if(!dir.exists()){
+        File dir = new File(ex, "Wardrobe");
+        if(!dir.exists()) {
             dir.mkdirs();
-        }else{
-            Log.w(TAG, "Didn't work");
         }
         File file = new File(dir, fileName + ".jpg");
         if (file.exists()) {
@@ -232,7 +232,6 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         }
         return file.getAbsolutePath();
     }
-
 
     private void populateSpinnerCategory() {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.category_array));
