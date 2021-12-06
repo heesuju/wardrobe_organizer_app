@@ -21,8 +21,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
     String NOTIFICATION_CHANNEL_ID = "wardrobe_channel";
@@ -58,24 +60,31 @@ public class MainActivity extends AppCompatActivity {
             db = helper.getReadableDatabase();
         }
         createNotificationChannel();
-        checkSeason();
+        checkThingsToPutAway();
+        checkThingsToTakeOut();
     }
 
-    private void checkSeason() {
-        DateFormat dateFormat = new SimpleDateFormat("MM");
-        Date date = new Date();
+    private void checkThingsToPutAway() {
+        java.util.Date date= new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int month = cal.get(Calendar.MONTH);
+
+        TimeZone tz = TimeZone.getDefault();
+        long time = System.currentTimeMillis() - ((86400000L*365L) + System.currentTimeMillis() % 86400000);
+        time -= tz.getOffset(time);
+        long start = 86400000L;
         Cursor cursor;
-        if(dateFormat.format(date).equals("4") || dateFormat.format(date).equals("5") ||
-            dateFormat.format(date).equals("8")){
+
+        if(month >= 4 && month <= 8){
             List<String> winter_materials = Arrays.asList(getResources().getStringArray(R.array.winter_material_array));
             List<String> list = new ArrayList<>();
-
 
             for(String e:winter_materials){
                 list.add(e);
                 list.add("옷장");
+                list.add("옷장");
             }
-
             String[] sArr = new String[list.size()];
             sArr = list.toArray(sArr);
 
@@ -84,18 +93,60 @@ public class MainActivity extends AppCompatActivity {
                 if(idx>0){
                     filter.append(" OR ");
                 }
-                filter.append("(material = ? AND state = ?)");
+                filter.append("((material = ? AND state = ?) OR (worn BETWEEN " + start + " AND " + time + " AND state = ?))");
             }
-            //String[] txt = {"정리"};
 
             String query = "SELECT * FROM wardrobe WHERE " + filter.toString();
-            //String query = "SELECT * FROM wardrobe WHERE state = ?";
-            //String query = "SELECT" + " (SELECT * FROM wardrobe WHERE " + filter.toString() + ")" + "FROM wardrobe WHERE state = ?";
             cursor = db.rawQuery(query, sArr);
-            sendNotification(cursor.getCount());
+        }else{
+            String[] sArr = {"옷장"};
+            String filter = "worn BETWEEN " + start + " AND " + time + " AND state = ?";
+            String query = "SELECT * FROM wardrobe WHERE " + filter.toString();
+            cursor = db.rawQuery(query, sArr);
+        }
+        if(cursor.getCount() > 0){
+            sendNotification("정리함으로 이동할 항목 추천", "정리 필요한 항목이 " + cursor.getCount() + "건 있습니다");
         }
     }
 
+    private void checkThingsToTakeOut() {
+        java.util.Date date= new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int month = cal.get(Calendar.MONTH);
+
+        TimeZone tz = TimeZone.getDefault();
+        long time = System.currentTimeMillis() - ((86400000L*365L) + System.currentTimeMillis() % 86400000);
+        time -= tz.getOffset(time);
+        Cursor cursor;
+
+        if(month >= 9 || (month >= 1 && month <= 2 )){
+            List<String> winter_materials = Arrays.asList(getResources().getStringArray(R.array.winter_material_array));
+            List<String> list = new ArrayList<>();
+
+            for(String e:winter_materials){
+                list.add(e);
+                list.add("정리");
+                list.add("정리");
+            }
+            String[] sArr = new String[list.size()];
+            sArr = list.toArray(sArr);
+
+            StringBuilder filter = new StringBuilder(100);
+            for (int idx=0; idx<winter_materials.size(); idx++) {
+                if(idx>0){
+                    filter.append(" OR ");
+                }
+                filter.append("((material = ? AND state = ?) AND (worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " AND state = ?))");
+            }
+
+            String query = "SELECT * FROM wardrobe WHERE " + filter.toString();
+            cursor = db.rawQuery(query, sArr);
+            if(cursor.getCount() > 0){
+                sendNotification("정리함에서 꺼낼 항목 추천", "정리함에서 꺼낼 항목이 " + cursor.getCount() + "건 있습니다");
+            }
+        }
+    }
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
@@ -105,14 +156,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void sendNotification(int count) {
+    public void sendNotification(String title, String message) {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
         Intent intent = new Intent(this, ListActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         notificationBuilder.setSmallIcon(R.drawable.ic_launcher_foreground);
-        notificationBuilder.setContentTitle("옷장 정리");
-        notificationBuilder.setContentText("옷장에서 정리할 항목이 있습니다." + count);
+        notificationBuilder.setContentTitle(title);
+        notificationBuilder.setContentText(message);
         notificationBuilder.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

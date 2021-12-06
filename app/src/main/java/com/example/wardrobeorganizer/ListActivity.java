@@ -191,7 +191,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                     time = System.currentTimeMillis() - ((86400000L*365L) + System.currentTimeMillis() % 86400000);
                     time -= tz.getOffset(time);
                     System.out.println(new Date(time));
-                    long start = 0L;
+                    long start = 86400000L;
                     filter.append("worn BETWEEN " + start + " AND " + time + " ORDER BY worn ASC");
                     break;
                 default:
