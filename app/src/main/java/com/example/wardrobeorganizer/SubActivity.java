@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -49,6 +52,8 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     ImageView image;
     TextView text_worn;
     long date_time;
+    DatabaseHelper helper;
+    SQLiteDatabase db;
     public static final int PICK_IMAGE = 1;
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
@@ -73,6 +78,14 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         spinner_category.setOnItemSelectedListener(this);
         spinner_material.setOnItemSelectedListener(this);
         spinner_state.setOnItemSelectedListener(this);
+
+        helper = new DatabaseHelper(this);
+        try {
+            db = helper.getWritableDatabase();
+        } catch (SQLiteException ex) {
+            db = helper.getReadableDatabase();
+        }
+
 
         Button buttonSave = (Button) findViewById(R.id.button_save);
         Button buttonUpdate = (Button) findViewById(R.id.button_update);
@@ -132,6 +145,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int nextInc = getAutoIncrement();
                 Intent intent = new Intent();
                 intent.putExtra("ACTION_RESULT", "CREATE");
                 intent.putExtra("INPUT_CATEGORY", spinner_category.getSelectedItem().toString());
@@ -142,10 +156,10 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 isReadStoragePermissionGranted();
                 //always save as
                 Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-                String dir = saveImage(bitmap, id);
+                String dir = saveImage(bitmap, String.valueOf(nextInc));
                 intent.putExtra("INPUT_IMAGE", dir);
                 intent.putExtra("INPUT_COLOR", spinner_color.getSelectedItem().toString());
-                intent.putExtra("INPUT_WORN", 0);
+                intent.putExtra("INPUT_WORN", 0L);
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -194,6 +208,18 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
             }
         });
     } // of onCreate()
+    public int getAutoIncrement(){
+        String query = "SELECT * FROM SQLITE_SEQUENCE";
+        Cursor cursor = db.rawQuery(query, null);
+        int nextInc = 0;
+        if (cursor.moveToFirst()){
+            do{
+                nextInc = cursor.getInt(cursor.getColumnIndex("seq"));
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        return ++nextInc;
+    }
     public  boolean isReadStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
