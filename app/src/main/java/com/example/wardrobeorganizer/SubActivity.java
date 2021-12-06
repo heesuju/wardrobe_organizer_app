@@ -6,6 +6,7 @@ import static android.content.ContentValues.TAG;
 import android.Manifest;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -47,6 +49,7 @@ import java.util.Date;
 public class SubActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     EditText edit_brand;
     String id;
+    String filePath;
     Spinner spinner_category, spinner_material, spinner_state, spinner_color;
     Button btnCamera, btnAlbum, btnWear;
     ImageView image;
@@ -116,6 +119,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 date_time = intent.getLongExtra("WORN", 0);
                 String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format((intent.getLongExtra("WORN", 0)));
                 text_worn.setText(date);
+                filePath = intent.getStringExtra("IMAGE");
                 Bitmap bitmap = BitmapFactory.decodeFile(intent.getStringExtra("IMAGE"));
                 image.setImageBitmap(bitmap);
                 break;
@@ -189,11 +193,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.putExtra("ACTION_RESULT", "DELETE");
-                intent.putExtra("ID", id);
-                setResult(RESULT_OK, intent);
-                finish();
+                showAlert(v);
             }
         });
         btnWear.setOnClickListener(new View.OnClickListener() {
@@ -238,7 +238,33 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
             return true;
         }
     }
-
+    public void showAlert(View view){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("삭제하시겠습니까?");
+        alertDialogBuilder.setPositiveButton("네",
+            new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    deleteImage(filePath);
+                    Intent intent = new Intent();
+                    intent.putExtra("ACTION_RESULT", "DELETE");
+                    intent.putExtra("ID", id);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                    Toast.makeText(SubActivity.this, "삭제 완료되었습니다.", Toast.LENGTH_LONG).show();
+                }
+        });
+        alertDialogBuilder.setNegativeButton("아니요",
+            new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Toast.makeText(SubActivity.this, "취소되었습니다.", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
     public  boolean isWriteStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -285,7 +311,12 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         }
         return file.getAbsolutePath();
     }
-
+    public void deleteImage(String filePath){
+        File file = new File(filePath);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
     private void populateSpinnerColor() {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.color_array));
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
