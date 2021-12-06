@@ -27,6 +27,10 @@
             android:name=".SubActivity"
             android:label="SubActivity">
         </activity>
+        <activity
+            android:name=".ListActivity"
+            android:label="ListActivity">
+        </activity>
     </application>
 
 </manifest>
