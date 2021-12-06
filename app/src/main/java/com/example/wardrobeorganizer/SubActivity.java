@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -54,9 +55,10 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     String id;
     String filePath;
     Spinner spinner_category, spinner_material, spinner_state, spinner_color;
-    Button btnCamera, btnAlbum, btnWear;
+    ImageButton btnCamera, btnAlbum;
+    Button btnWear;
     ImageView image;
-    TextView text_worn;
+    TextView text_worn, label_worn, label_state;
     long date_time;
     DatabaseHelper helper;
     SQLiteDatabase db;
@@ -68,12 +70,18 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
+        getSupportActionBar().hide();
+
         spinner_color = findViewById(R.id.spinner_color);
         spinner_category = findViewById(R.id.spinner_category);
         spinner_material = findViewById(R.id.spinner_material);
         spinner_state = findViewById(R.id.spinner_state);
+
         edit_brand = findViewById(R.id.edit_brand);
         text_worn = findViewById(R.id.text_worn);
+        label_worn = findViewById(R.id.label_worn);
+        label_state = findViewById(R.id.label_state);
+
         btnAlbum = findViewById(R.id.button_album);
         btnCamera = findViewById(R.id.button_camera);
         image = findViewById(R.id.image);
@@ -107,6 +115,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 buttonDelete.setVisibility(View.GONE);
                 btnWear.setVisibility(View.GONE);
                 text_worn.setVisibility(View.GONE);
+                label_worn.setVisibility(View.GONE);
                 break;
             case "UPDATE":
                 buttonSave.setVisibility(View.GONE);
@@ -114,6 +123,8 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 buttonDelete.setVisibility(View.VISIBLE);
                 btnWear.setVisibility(View.VISIBLE);
                 text_worn.setVisibility(View.VISIBLE);
+                label_state.setVisibility(View.GONE);
+                spinner_state.setVisibility(View.GONE);
 
                 id = intent.getStringExtra("ID");
                 spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition(intent.getStringExtra("CATEGORY")));
