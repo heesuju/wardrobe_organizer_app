@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,8 +24,10 @@ import android.widget.GridView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -83,19 +87,14 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG,"Permission is granted1");
                 printDb();
             } else {
-
-                Log.v(TAG,"Permission is revoked1");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
             }
         }
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG,"Permission is granted1");
+        else {
             printDb();
         }
-
     }
 
     private String checkFilter() {
@@ -146,19 +145,19 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
             long time = System.currentTimeMillis();
             switch (date) {
                 case "오늘":
-                    time = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000) + 86400000;
-                    time -= tz.getOffset(time);
-                    System.out.println(new Date(time));
-                    filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
-                    break;
-                case "어제":
                     time = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000);
                     time -= tz.getOffset(time);
                     System.out.println(new Date(time));
                     filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
                     break;
+                case "어제":
+                    time = System.currentTimeMillis() - (86400000L + System.currentTimeMillis() % 86400000);
+                    time -= tz.getOffset(time);
+                    System.out.println(new Date(time));
+                    filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
+                    break;
                 case "1주":
-                    time = System.currentTimeMillis() - ((86400000*6) + System.currentTimeMillis() % 86400000);
+                    time = System.currentTimeMillis() - ((86400000L*7L) + System.currentTimeMillis() % 86400000);
                     time -= tz.getOffset(time);
                     System.out.println(new Date(time));
                     filter.append("worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " ORDER BY worn ASC");
@@ -190,7 +189,6 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                 case "1년 이상":
                     time = System.currentTimeMillis() - ((86400000L*365L) + System.currentTimeMillis() % 86400000);
                     time -= tz.getOffset(time);
-                    System.out.println(new Date(time));
                     long start = 86400000L;
                     filter.append("worn BETWEEN " + start + " AND " + time + " ORDER BY worn ASC");
                     break;
@@ -203,15 +201,87 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void printDb() {
         String filter = checkFilter();
-        String[] sArr = new String[filterValues.size()];
-        sArr = filterValues.toArray(sArr);
+
         Cursor cursor;
+        java.util.Date date= new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int month = cal.get(Calendar.MONTH);
+        TimeZone tz = TimeZone.getDefault();
+        long time = System.currentTimeMillis() - ((86400000L*365L) + System.currentTimeMillis() % 86400000);
+        time -= tz.getOffset(time);
+
+        Intent intent = getIntent();
+        String actionRequest = intent.getStringExtra("ACTION_REQUEST");
+        String[] sArray = {};
+        StringBuilder str;
+        String query = "";
+
         if(filter.equals("")){
-            cursor = db.rawQuery("SELECT * FROM wardrobe", null);
+            switch (actionRequest) {
+                case "VIEW":
+                    spinner_state.setVisibility(View.VISIBLE);
+                    query = "SELECT * FROM wardrobe";
+                    sArray = null;
+                    break;
+                case "TAKE_OUT":
+                    spinner_state.setVisibility(View.INVISIBLE);
+                    if(month >= 9 || (month >= 1 && month <= 2 )) {
+                        List<String> winter_materials = Arrays.asList(getResources().getStringArray(R.array.winter_material_array));
+                        List<String> list = new ArrayList<>();
+                        for (String e : winter_materials) {
+                            list.add(e);
+                            list.add("정리");
+                            list.add("정리");
+                        }
+                        sArray = new String[list.size()];
+                        sArray = list.toArray(sArray);
+                        str = new StringBuilder(100);
+                        for (int idx = 0; idx < winter_materials.size(); idx++) {
+                            if (idx > 0) {
+                                str.append(" OR ");
+                            }
+                            str.append("((material = ? AND state = ?) AND (worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " AND state = ?))");
+                        }
+                        query = "SELECT * FROM wardrobe WHERE " + str.toString();
+                    }
+                    break;
+                case "PUT_AWAY":
+                    spinner_state.setVisibility(View.INVISIBLE);
+                    long start = 86400000L;
+                    if(month >= 4 && month <= 8){
+                        List<String> winter_materials = Arrays.asList(getResources().getStringArray(R.array.winter_material_array));
+                        List<String> list = new ArrayList<>();
+                        for(String e:winter_materials){
+                            list.add(e);
+                            list.add("옷장");
+                            list.add("옷장");
+                        }
+                        sArray = new String[list.size()];
+                        sArray = list.toArray(sArray);
+                        str = new StringBuilder(100);
+                        for (int idx=0; idx<winter_materials.size(); idx++) {
+                            if(idx>0){
+                                str.append(" OR ");
+                            }
+                            str.append("((material = ? AND state = ?) OR (worn BETWEEN " + start + " AND " + time + " AND state = ?))");
+                        }
+                        query = "SELECT * FROM wardrobe WHERE " + str.toString();
+                    }else{
+                        sArray = new String[1];
+                        sArray[0] = "옷장";
+                        str = new StringBuilder(100);
+                        str.append("worn BETWEEN " + start + " AND " + time + " AND state = ?");
+                        query = "SELECT * FROM wardrobe WHERE " + str.toString();
+                    }
+                    break;
+            }
         }else{
-            String query = "SELECT * FROM wardrobe WHERE " + filter;
-            cursor = db.rawQuery(query, sArr);
+            sArray = new String[filterValues.size()];
+            sArray = filterValues.toArray(sArray);
+            query = "SELECT * FROM wardrobe WHERE " + filter;
         }
+        cursor = db.rawQuery(query, sArray);
         startManagingCursor(cursor);
 
         String[] from = {"category", "material", "brand", "state", "image", "color", "worn"};

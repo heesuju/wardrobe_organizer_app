@@ -103,14 +103,16 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         switch (actionRequest) {
             case "CREATE":
                 buttonSave.setVisibility(View.VISIBLE);
-                buttonUpdate.setVisibility(View.INVISIBLE);
-                buttonDelete.setVisibility(View.INVISIBLE);
-                text_worn.setVisibility(View.INVISIBLE);
+                buttonUpdate.setVisibility(View.GONE);
+                buttonDelete.setVisibility(View.GONE);
+                btnWear.setVisibility(View.GONE);
+                text_worn.setVisibility(View.GONE);
                 break;
             case "UPDATE":
-                buttonSave.setVisibility(View.INVISIBLE);
+                buttonSave.setVisibility(View.GONE);
                 buttonUpdate.setVisibility(View.VISIBLE);
                 buttonDelete.setVisibility(View.VISIBLE);
+                btnWear.setVisibility(View.VISIBLE);
                 text_worn.setVisibility(View.VISIBLE);
 
                 id = intent.getStringExtra("ID");
@@ -152,23 +154,27 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int nextInc = getAutoIncrement();
-                Intent intent = new Intent();
-                intent.putExtra("ACTION_RESULT", "CREATE");
-                intent.putExtra("INPUT_CATEGORY", spinner_category.getSelectedItem().toString());
-                intent.putExtra("INPUT_MATERIAL", spinner_material.getSelectedItem().toString());
-                intent.putExtra("INPUT_BRAND", edit_brand.getText().toString());
-                intent.putExtra("INPUT_STATE", spinner_state.getSelectedItem().toString());
-                isWriteStoragePermissionGranted();
-                isReadStoragePermissionGranted();
-                //always save as
-                Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-                String dir = saveImage(bitmap, String.valueOf(nextInc));
-                intent.putExtra("INPUT_IMAGE", dir);
-                intent.putExtra("INPUT_COLOR", spinner_color.getSelectedItem().toString());
-                intent.putExtra("INPUT_WORN", 0L);
-                setResult(RESULT_OK, intent);
-                finish();
+                try {
+                    Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+                    int nextInc = getAutoIncrement();
+                    Intent intent = new Intent();
+                    intent.putExtra("ACTION_RESULT", "CREATE");
+                    intent.putExtra("INPUT_CATEGORY", spinner_category.getSelectedItem().toString());
+                    intent.putExtra("INPUT_MATERIAL", spinner_material.getSelectedItem().toString());
+                    intent.putExtra("INPUT_BRAND", edit_brand.getText().toString());
+                    intent.putExtra("INPUT_STATE", spinner_state.getSelectedItem().toString());
+                    isWriteStoragePermissionGranted();
+                    isReadStoragePermissionGranted();
+                    //always save as
+                    String dir = saveImage(bitmap, String.valueOf(nextInc));
+                    intent.putExtra("INPUT_IMAGE", dir);
+                    intent.putExtra("INPUT_COLOR", spinner_color.getSelectedItem().toString());
+                    intent.putExtra("INPUT_WORN", 0L);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }catch (Exception e) {
+                    Toast.makeText(SubActivity.this, "이미지를 선택해주세요.", Toast.LENGTH_LONG).show();
+                }
             }
         });
         buttonUpdate.setOnClickListener(new View.OnClickListener() {

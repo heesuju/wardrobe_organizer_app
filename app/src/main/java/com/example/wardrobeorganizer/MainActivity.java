@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ListActivity.class);
+                intent.putExtra("ACTION_REQUEST", "VIEW");
                 startActivityForResult(intent, GET_STRING);
             }
         });
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             cursor = db.rawQuery(query, sArr);
         }
         if(cursor.getCount() > 0){
-            sendNotification("정리함으로 이동할 항목 추천", "정리 필요한 항목이 " + cursor.getCount() + "건 있습니다");
+            sendNotification("정리 필요한 항목 발견", "정리 필요한 항목이 " + cursor.getCount() + "건 있습니다", 1);
         }
     }
 
@@ -143,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             String query = "SELECT * FROM wardrobe WHERE " + filter.toString();
             cursor = db.rawQuery(query, sArr);
             if(cursor.getCount() > 0){
-                sendNotification("정리함에서 꺼낼 항목 추천", "정리함에서 꺼낼 항목이 " + cursor.getCount() + "건 있습니다");
+                sendNotification("꺼낼 항목 발견", "정리함에서 꺼낼 항목이 " + cursor.getCount() + "건 있습니다", 2);
             }
         }
     }
@@ -156,10 +157,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void sendNotification(String title, String message) {
+    public void sendNotification(String title, String message, int id) {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
         Intent intent = new Intent(this, ListActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        if(id<=1){
+            intent.putExtra("ACTION_REQUEST", "PUT_AWAY");
+        }else{
+            intent.putExtra("ACTION_REQUEST", "TAKE_OUT");
+        }
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, id);
 
         notificationBuilder.setSmallIcon(R.drawable.ic_launcher_foreground);
         notificationBuilder.setContentTitle(title);
@@ -167,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         notificationBuilder.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1, notificationBuilder.build());
+        notificationManager.notify(id, notificationBuilder.build());
     }
 
     @Override
