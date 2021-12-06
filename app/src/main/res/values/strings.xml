@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">WardrobeOrganizer</string>
-    <string name="btn_add">Add</string>
+    <string name="left_title">WARDROBE</string>
+    <string name="right_title">ORGANIZER</string>
+    <string name="btn_add">ADD</string>
+    <string name="btn_view">VIEW</string>
+    <string name="btn_take_out">TAKE OUT</string>
+    <string name="btn_put_away">PUT AWAY</string>
+    <string name="develop_desc">DEVELOPED BY</string>
+    <string name="author">HEESU JU</string>
 
     <string name="category">종류</string>
     <string name="material">소재</string>

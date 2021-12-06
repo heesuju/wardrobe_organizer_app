@@ -36,9 +36,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button button = (Button) findViewById(R.id.button1);
-        Button btnView = (Button) findViewById(R.id.button2);
-        button.setOnClickListener(new View.OnClickListener() {
+        getSupportActionBar().hide();
+        Button btnAdd = (Button) findViewById(R.id.button_add);
+        Button btnView = (Button) findViewById(R.id.button_view);
+        Button btnTakeOut = (Button) findViewById(R.id.button_take_out);
+        Button btnPutAway = (Button) findViewById(R.id.button_put_away);
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SubActivity.class);
@@ -51,6 +55,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ListActivity.class);
                 intent.putExtra("ACTION_REQUEST", "VIEW");
+                startActivityForResult(intent, GET_STRING);
+            }
+        });
+        btnTakeOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ListActivity.class);
+                intent.putExtra("ACTION_REQUEST", "TAKE_OUT");
+                startActivityForResult(intent, GET_STRING);
+            }
+        });
+        btnPutAway.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ListActivity.class);
+                intent.putExtra("ACTION_REQUEST", "PUT_AWAY");
                 startActivityForResult(intent, GET_STRING);
             }
         });
