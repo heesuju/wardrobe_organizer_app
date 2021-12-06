@@ -1,49 +1,34 @@
 package com.example.wardrobeorganizer;
-import static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
-import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
-import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
-
+    String NOTIFICATION_CHANNEL_ID = "wardrobe_channel";
     static final int GET_STRING = 1;
     DatabaseHelper helper;
     SQLiteDatabase db;
-    EditText edit_brand;
-    Spinner spinner_category, spinner_material, spinner_state, spinner_color, spinner_date;
-    Button btnSearch, btnClear;
-    List<String> filterValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +57,67 @@ public class MainActivity extends AppCompatActivity {
         } catch (SQLiteException ex) {
             db = helper.getReadableDatabase();
         }
+        createNotificationChannel();
+        checkSeason();
     }
 
+    private void checkSeason() {
+        DateFormat dateFormat = new SimpleDateFormat("MM");
+        Date date = new Date();
+        Cursor cursor;
+        if(dateFormat.format(date).equals("4") || dateFormat.format(date).equals("5") ||
+            dateFormat.format(date).equals("8")){
+            List<String> winter_materials = Arrays.asList(getResources().getStringArray(R.array.winter_material_array));
+            List<String> list = new ArrayList<>();
+
+
+            for(String e:winter_materials){
+                list.add(e);
+                list.add("옷장");
+            }
+
+            String[] sArr = new String[list.size()];
+            sArr = list.toArray(sArr);
+
+            StringBuilder filter = new StringBuilder(100);
+            for (int idx=0; idx<winter_materials.size(); idx++) {
+                if(idx>0){
+                    filter.append(" OR ");
+                }
+                filter.append("(material = ? AND state = ?)");
+            }
+            //String[] txt = {"정리"};
+
+            String query = "SELECT * FROM wardrobe WHERE " + filter.toString();
+            //String query = "SELECT * FROM wardrobe WHERE state = ?";
+            //String query = "SELECT" + " (SELECT * FROM wardrobe WHERE " + filter.toString() + ")" + "FROM wardrobe WHERE state = ?";
+            cursor = db.rawQuery(query, sArr);
+            sendNotification(cursor.getCount());
+        }
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationChannel.setDescription("Channel description");
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+    }
+
+    public void sendNotification(int count) {
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        Intent intent = new Intent(this, ListActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        notificationBuilder.setSmallIcon(R.drawable.ic_launcher_foreground);
+        notificationBuilder.setContentTitle("옷장 정리");
+        notificationBuilder.setContentText("옷장에서 정리할 항목이 있습니다." + count);
+        notificationBuilder.setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, notificationBuilder.build());
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

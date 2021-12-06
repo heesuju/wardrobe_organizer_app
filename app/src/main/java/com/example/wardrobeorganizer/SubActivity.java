@@ -44,7 +44,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class SubActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     EditText edit_brand;
@@ -330,7 +333,10 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     }
 
     private void populateSpinnerMaterial() {
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.material_array));
+        List<String> materials = new ArrayList<>();
+        materials.addAll(Arrays.asList(getResources().getStringArray(R.array.material_array)));
+        materials.addAll(Arrays.asList(getResources().getStringArray(R.array.winter_material_array)));
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, materials);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_material.setAdapter(arrayAdapter);
     }

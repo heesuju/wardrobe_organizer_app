@@ -10,8 +10,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,14 +19,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -282,6 +275,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         List<String> materials = new ArrayList<>();
         materials.add(0, "전체");
         materials.addAll(Arrays.asList(getResources().getStringArray(R.array.material_array)));
+        materials.addAll(Arrays.asList(getResources().getStringArray(R.array.winter_material_array)));
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, materials);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_material.setAdapter(arrayAdapter);
@@ -357,23 +351,17 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int i, long l) {
         if(parent.getId() == R.id.spinner_category){
-            if(parent.getItemAtPosition(i).equals("전체")) {
-
-            }else{
+            if(!parent.getItemAtPosition(i).equals("전체")) {
                 String selected = parent.getSelectedItem().toString();
             }
         }
         else if(parent.getId() == R.id.spinner_material){
-            if(parent.getItemAtPosition(i).equals("전체")) {
-
-            }else{
+            if(!parent.getItemAtPosition(i).equals("전체")) {
                 String selected = parent.getSelectedItem().toString();
             }
         }
         else if(parent.getId() == R.id.spinner_state){
-            if(parent.getItemAtPosition(i).equals("전체")) {
-
-            }else{
+            if(!parent.getItemAtPosition(i).equals("전체")) {
                 String selected = parent.getSelectedItem().toString();
             }
         }
