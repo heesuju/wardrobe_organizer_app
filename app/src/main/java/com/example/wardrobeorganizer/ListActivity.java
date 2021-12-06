@@ -62,15 +62,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         edit_brand = findViewById(R.id.edit_brand);
         btnSearch= findViewById(R.id.button_search);
         btnClear = findViewById(R.id.button_clear);
-        Button button = (Button) findViewById(R.id.button1);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ListActivity.this, SubActivity.class);
-                intent.putExtra("ACTION_REQUEST", "CREATE");
-                startActivityForResult(intent, GET_STRING);
-            }
-        });
+
         btnSearch.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -80,10 +72,11 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         btnClear.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                spinner_color.setSelection(((ArrayAdapter)spinner_color.getAdapter()).getPosition("모두"));
-                spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition("모두"));
-                spinner_material.setSelection(((ArrayAdapter)spinner_material.getAdapter()).getPosition("모두"));
-                spinner_state.setSelection(((ArrayAdapter)spinner_state.getAdapter()).getPosition("모두"));
+                spinner_color.setSelection(((ArrayAdapter)spinner_color.getAdapter()).getPosition("전체"));
+                spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition("전체"));
+                spinner_material.setSelection(((ArrayAdapter)spinner_material.getAdapter()).getPosition("전체"));
+                spinner_state.setSelection(((ArrayAdapter)spinner_state.getAdapter()).getPosition("전체"));
+                spinner_date.setSelection(((ArrayAdapter)spinner_date.getAdapter()).getPosition("전체"));
                 edit_brand.setText("");
                 printDb();
             }
@@ -121,18 +114,18 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         String color = spinner_color.getSelectedItem().toString();
         String date = spinner_date.getSelectedItem().toString();
         StringBuilder filter = new StringBuilder(100);
-        if(!category.equals("모두")) {
+        if(!category.equals("전체")) {
             filter.append("category = ?");
             filterValues.add(category);
         }
-        if(!color.equals("모두")) {
+        if(!color.equals("전체")) {
             if(filter.length() > 0) {
                 filter.append(" AND ");
             }
             filter.append("color = ?");
             filterValues.add(color);
         }
-        if(!material.equals("모두")) {
+        if(!material.equals("전체")) {
             if(filter.length() > 0) {
                 filter.append(" AND ");
             }
@@ -143,10 +136,9 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
             if(filter.length() > 0) {
                 filter.append(" AND ");
             }
-            filter.append("brand = ?");
-            filterValues.add(brand);
+            filter.append("brand like " + "'%" + brand + "%'");
         }
-        if(!state.equals("모두")) {
+        if(!state.equals("전체")) {
             if(filter.length() > 0) {
                 filter.append(" AND ");
             }
@@ -270,7 +262,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
     }
     private void populateSpinnerColor() {
         List<String> colors = new ArrayList<>();
-        colors.add(0, "모두");
+        colors.add(0, "전체");
         colors.addAll(Arrays.asList(getResources().getStringArray(R.array.color_array)));
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, colors);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -279,7 +271,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void populateSpinnerCategory() {
         List<String> categories = new ArrayList<>();
-        categories.add(0, "모두");
+        categories.add(0, "전체");
         categories.addAll(Arrays.asList(getResources().getStringArray(R.array.category_array)));
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -288,7 +280,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void populateSpinnerMaterial() {
         List<String> materials = new ArrayList<>();
-        materials.add(0, "모두");
+        materials.add(0, "전체");
         materials.addAll(Arrays.asList(getResources().getStringArray(R.array.material_array)));
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, materials);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -297,7 +289,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void populateSpinnerState() {
         List<String> states = new ArrayList<>();
-        states.add(0, "모두");
+        states.add(0, "전체");
         states.addAll(Arrays.asList(getResources().getStringArray(R.array.state_array)));
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, states);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -365,21 +357,21 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int i, long l) {
         if(parent.getId() == R.id.spinner_category){
-            if(parent.getItemAtPosition(i).equals("모두")) {
+            if(parent.getItemAtPosition(i).equals("전체")) {
 
             }else{
                 String selected = parent.getSelectedItem().toString();
             }
         }
         else if(parent.getId() == R.id.spinner_material){
-            if(parent.getItemAtPosition(i).equals("모두")) {
+            if(parent.getItemAtPosition(i).equals("전체")) {
 
             }else{
                 String selected = parent.getSelectedItem().toString();
             }
         }
         else if(parent.getId() == R.id.spinner_state){
-            if(parent.getItemAtPosition(i).equals("모두")) {
+            if(parent.getItemAtPosition(i).equals("전체")) {
 
             }else{
                 String selected = parent.getSelectedItem().toString();
