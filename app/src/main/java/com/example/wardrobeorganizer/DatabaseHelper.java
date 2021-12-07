@@ -15,7 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE wardrobe (_id INTEGER PRIMARY KEY" +
-                " Autoincrement, category TEXT, material TEXT, brand TEXT, state TEXT, image TEXT, color TEXT, worn INTEGER);");
+                " Autoincrement, category TEXT, season TEXT, brand TEXT, state TEXT, image TEXT, color TEXT, worn INTEGER);");
     }
 
     public void onUpgrade(SQLiteDatabase db, int ondVersion, int newVersion) {

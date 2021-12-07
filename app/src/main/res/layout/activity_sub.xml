@@ -131,12 +131,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/material"
+                android:text="@string/season"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:layout_weight="2"/>
             <Spinner
-                android:id="@+id/spinner_material"
+                android:id="@+id/spinner_season"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>

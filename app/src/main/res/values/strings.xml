@@ -10,7 +10,7 @@
     <string name="author">HEESU JU</string>
 
     <string name="category">종류</string>
-    <string name="material">소재</string>
+    <string name="season">계절</string>
     <string name="brand">브랜드</string>
     <string name="state">상태</string>
     <string name="worn">입은 날짜</string>
@@ -18,43 +18,35 @@
     <string name="cancel">취소</string>
 
     <string-array name="color_array">
-        <item>화이트</item>
-        <item>레드</item>
-        <item>블루</item>
-        <item>그린</item>
-        <item>옐로우</item>
-        <item>오렌지</item>
-        <item>브라운</item>
-        <item>핑크</item>
-        <item>퍼플</item>
-        <item>네이비</item>
-        <item>그레이</item>
-        <item>블랙</item>
+        <item>하양</item>
+        <item>빨강</item>
+        <item>파랑</item>
+        <item>초록</item>
+        <item>노랑</item>
+        <item>주황</item>
+        <item>갈색</item>
+        <item>분홍</item>
+        <item>보라</item>
+        <item>남색</item>
+        <item>회색</item>
+        <item>검정</item>
     </string-array>
 
     <string-array name="category_array">
         <item>상의</item>
-        <item>하의</item>
+        <item>바지</item>
+        <item>스커트</item>
         <item>아우터</item>
         <item>원피스</item>
+        <item>언더웨어</item>
+        <item>비치웨어</item>
+        <item>홈웨어</item>
+        <item>기타</item>
     </string-array>
 
-    <string-array name="material_array">
-        <item>리넨</item>
-        <item>나일론</item>
-        <item>플리에스터</item>
-        <item>실크</item>
-        <item>데님</item>
-        <item>레더</item>
-    </string-array>
-
-    <string-array name="winter_material_array">
-        <item>코튼</item>
-        <item>울</item>
-        <item>캐시미어</item>
-        <item>니트</item>
-        <item>후리스</item>
-        <item>퍼</item>
+    <string-array name="season_array">
+        <item>SS</item>
+        <item>FW</item>
     </string-array>
 
     <string-array name="state_array">

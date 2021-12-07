@@ -54,7 +54,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     EditText edit_brand;
     String id;
     String filePath;
-    Spinner spinner_category, spinner_material, spinner_state, spinner_color;
+    Spinner spinner_category, spinner_season, spinner_state, spinner_color;
     ImageButton btnCamera, btnAlbum;
     Button btnWear, btnTakeOut, btnPutAway, btnCancel;
     ImageView image, color_img;
@@ -74,7 +74,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
 
         spinner_color = findViewById(R.id.spinner_color);
         spinner_category = findViewById(R.id.spinner_category);
-        spinner_material = findViewById(R.id.spinner_material);
+        spinner_season = findViewById(R.id.spinner_season);
         spinner_state = findViewById(R.id.spinner_state);
 
         edit_brand = findViewById(R.id.edit_brand);
@@ -92,10 +92,10 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         color_img = findViewById(R.id.color_image);
         populateSpinnerColor();
         populateSpinnerCategory();
-        populateSpinnerMaterial();
+        populateSpinnerSeason();
         populateSpinnerState();
         spinner_category.setOnItemSelectedListener(this);
-        spinner_material.setOnItemSelectedListener(this);
+        spinner_season.setOnItemSelectedListener(this);
         spinner_state.setOnItemSelectedListener(this);
         spinner_color.setOnItemSelectedListener(this);
 
@@ -137,7 +137,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
 
                 id = intent.getStringExtra("ID");
                 spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition(intent.getStringExtra("CATEGORY")));
-                spinner_material.setSelection(((ArrayAdapter)spinner_material.getAdapter()).getPosition(intent.getStringExtra("MATERIAL")));
+                spinner_season.setSelection(((ArrayAdapter)spinner_season.getAdapter()).getPosition(intent.getStringExtra("SEASON")));
                 spinner_state.setSelection(((ArrayAdapter)spinner_state.getAdapter()).getPosition(intent.getStringExtra("STATE")));
                 spinner_color.setSelection(((ArrayAdapter)spinner_color.getAdapter()).getPosition(intent.getStringExtra("COLOR")));
                 edit_brand.setText(intent.getStringExtra("BRAND"));
@@ -187,7 +187,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                     Intent intent = new Intent();
                     intent.putExtra("ACTION_RESULT", "CREATE");
                     intent.putExtra("INPUT_CATEGORY", spinner_category.getSelectedItem().toString());
-                    intent.putExtra("INPUT_MATERIAL", spinner_material.getSelectedItem().toString());
+                    intent.putExtra("INPUT_SEASON", spinner_season.getSelectedItem().toString());
                     intent.putExtra("INPUT_BRAND", edit_brand.getText().toString());
                     intent.putExtra("INPUT_STATE", spinner_state.getSelectedItem().toString());
                     isWriteStoragePermissionGranted();
@@ -211,7 +211,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 intent.putExtra("ACTION_RESULT", "UPDATE");
                 intent.putExtra("ID", id);
                 intent.putExtra("INPUT_CATEGORY", spinner_category.getSelectedItem().toString());
-                intent.putExtra("INPUT_MATERIAL", spinner_material.getSelectedItem().toString());
+                intent.putExtra("INPUT_SEASON", spinner_season.getSelectedItem().toString());
                 intent.putExtra("INPUT_BRAND", edit_brand.getText().toString());
                 intent.putExtra("INPUT_STATE", spinner_state.getSelectedItem().toString());
                 isWriteStoragePermissionGranted();
@@ -393,13 +393,10 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         spinner_category.setAdapter(arrayAdapter);
     }
 
-    private void populateSpinnerMaterial() {
-        List<String> materials = new ArrayList<>();
-        materials.addAll(Arrays.asList(getResources().getStringArray(R.array.material_array)));
-        materials.addAll(Arrays.asList(getResources().getStringArray(R.array.winter_material_array)));
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, materials);
+    private void populateSpinnerSeason() {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.season_array));
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_material.setAdapter(arrayAdapter);
+        spinner_season.setAdapter(arrayAdapter);
     }
 
     private void populateSpinnerState() {
@@ -413,7 +410,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         if(parent.getId() == R.id.spinner_category){
             String selected = parent.getSelectedItem().toString();
         }
-        else if(parent.getId() == R.id.spinner_material){
+        else if(parent.getId() == R.id.spinner_season){
             String selected = parent.getSelectedItem().toString();
         }
         else if(parent.getId() == R.id.spinner_state){
@@ -422,40 +419,40 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         else if(parent.getId() == R.id.spinner_color){
             String selected = parent.getSelectedItem().toString();
             switch(selected){
-                case "화이트":
+                case "하양":
                     color_img.setBackgroundResource(R.color.white);
                     break;
-                case "레드":
+                case "빨강":
                     color_img.setBackgroundResource(R.color.red);
                     break;
-                case "블루":
+                case "파랑":
                     color_img.setBackgroundResource(R.color.blue);
                     break;
-                case "그린":
+                case "초록":
                     color_img.setBackgroundResource(R.color.green);
                     break;
-                case "옐로우":
+                case "노랑":
                     color_img.setBackgroundResource(R.color.yellow);
                     break;
-                case "오렌지":
+                case "주황":
                     color_img.setBackgroundResource(R.color.orange);
                     break;
-                case "브라운":
+                case "갈색":
                     color_img.setBackgroundResource(R.color.brown);
                     break;
-                case "핑크":
+                case "분홍":
                     color_img.setBackgroundResource(R.color.pink);
                     break;
-                case "퍼플":
+                case "보라":
                     color_img.setBackgroundResource(R.color.purple_200);
                     break;
-                case "네이비":
+                case "남색":
                     color_img.setBackgroundResource(R.color.navy);
                     break;
-                case "그레이":
+                case "회색":
                     color_img.setBackgroundResource(R.color.gray);
                     break;
-                case "블랙":
+                case "검정":
                     color_img.setBackgroundResource(R.color.black);
                     break;
             }

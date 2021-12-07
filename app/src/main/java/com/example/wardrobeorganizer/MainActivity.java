@@ -95,29 +95,13 @@ public class MainActivity extends AppCompatActivity {
         long time = System.currentTimeMillis() - ((86400000L*365L) + System.currentTimeMillis() % 86400000);
         time -= tz.getOffset(time);
         long start = 86400000L;
+
         Cursor cursor;
 
         if(month >= 4 && month <= 8){
-            List<String> winter_materials = Arrays.asList(getResources().getStringArray(R.array.winter_material_array));
-            List<String> list = new ArrayList<>();
-
-            for(String e:winter_materials){
-                list.add(e);
-                list.add("옷장");
-                list.add("옷장");
-            }
-            String[] sArr = new String[list.size()];
-            sArr = list.toArray(sArr);
-
-            StringBuilder filter = new StringBuilder(100);
-            for (int idx=0; idx<winter_materials.size(); idx++) {
-                if(idx>0){
-                    filter.append(" OR ");
-                }
-                filter.append("((material = ? AND state = ?) OR (worn BETWEEN " + start + " AND " + time + " AND state = ?))");
-            }
-
-            String query = "SELECT * FROM wardrobe WHERE " + filter.toString();
+            String[] sArr = {"FW", "옷장", "옷장"};
+            String filter = "((season = ? AND state = ?) OR (worn BETWEEN " + start + " AND " + time + " AND state = ?))";
+            String query = "SELECT * FROM wardrobe WHERE " + filter;
             cursor = db.rawQuery(query, sArr);
         }else{
             String[] sArr = {"옷장"};
@@ -139,29 +123,13 @@ public class MainActivity extends AppCompatActivity {
         TimeZone tz = TimeZone.getDefault();
         long time = System.currentTimeMillis() - ((86400000L*365L) + System.currentTimeMillis() % 86400000);
         time -= tz.getOffset(time);
+
         Cursor cursor;
 
         if(month >= 9 || (month >= 1 && month <= 2 )){
-            List<String> winter_materials = Arrays.asList(getResources().getStringArray(R.array.winter_material_array));
-            List<String> list = new ArrayList<>();
-
-            for(String e:winter_materials){
-                list.add(e);
-                list.add("정리");
-                list.add("정리");
-            }
-            String[] sArr = new String[list.size()];
-            sArr = list.toArray(sArr);
-
-            StringBuilder filter = new StringBuilder(100);
-            for (int idx=0; idx<winter_materials.size(); idx++) {
-                if(idx>0){
-                    filter.append(" OR ");
-                }
-                filter.append("((material = ? AND state = ?) AND (worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " AND state = ?))");
-            }
-
-            String query = "SELECT * FROM wardrobe WHERE " + filter.toString();
+            String[] sArr = {"FW", "정리"};
+            String filter = "((season = ? AND state = ?) AND (worn BETWEEN " + time + " AND " + System.currentTimeMillis() + "))";
+            String query = "SELECT * FROM wardrobe WHERE " + filter;
             cursor = db.rawQuery(query, sArr);
             if(cursor.getCount() > 0){
                 sendNotification("꺼낼 항목 발견", "정리함에서 꺼낼 항목이 " + cursor.getCount() + "건 있습니다", 2);
@@ -204,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 case "CREATE":
                     db.execSQL("INSERT INTO wardrobe VALUES (null, " +
                             "'" + data.getStringExtra("INPUT_CATEGORY") + "', " +
-                            "'" + data.getStringExtra("INPUT_MATERIAL") + "', " +
+                            "'" + data.getStringExtra("INPUT_SEASON") + "', " +
                             "'" + data.getStringExtra("INPUT_BRAND") + "', " +
                             "'" + data.getStringExtra("INPUT_STATE") + "', " +
                             "'" + data.getStringExtra("INPUT_IMAGE") + "', " +

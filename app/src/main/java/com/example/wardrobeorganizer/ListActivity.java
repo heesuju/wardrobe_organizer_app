@@ -38,7 +38,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
     DatabaseHelper helper;
     SQLiteDatabase db;
     EditText edit_brand;
-    Spinner spinner_category, spinner_material, spinner_state, spinner_color, spinner_date;
+    Spinner spinner_category, spinner_season, spinner_state, spinner_color, spinner_date;
     Button btnSearch, btnClear;
     List<String> filterValues;
 
@@ -50,12 +50,12 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
 
         spinner_color = findViewById(R.id.spinner_color);
         spinner_category = findViewById(R.id.spinner_category);
-        spinner_material = findViewById(R.id.spinner_material);
+        spinner_season = findViewById(R.id.spinner_season);
         spinner_state = findViewById(R.id.spinner_state);
         spinner_date = findViewById(R.id.spinner_date);
         populateSpinnerColor();
         populateSpinnerCategory();
-        populateSpinnerMaterial();
+        populateSpinnerSeason();
         populateSpinnerState();
         populateSpinnerDate();
         edit_brand = findViewById(R.id.edit_brand);
@@ -73,7 +73,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(View v) {
                 spinner_color.setSelection(((ArrayAdapter)spinner_color.getAdapter()).getPosition("전체"));
                 spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition("전체"));
-                spinner_material.setSelection(((ArrayAdapter)spinner_material.getAdapter()).getPosition("전체"));
+                spinner_season.setSelection(((ArrayAdapter)spinner_season.getAdapter()).getPosition("전체"));
                 spinner_state.setSelection(((ArrayAdapter)spinner_state.getAdapter()).getPosition("전체"));
                 spinner_date.setSelection(((ArrayAdapter)spinner_date.getAdapter()).getPosition("전체"));
                 edit_brand.setText("");
@@ -102,7 +102,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
     private String checkFilter() {
         filterValues = new ArrayList<>();
         String category = spinner_category.getSelectedItem().toString();
-        String material = spinner_material.getSelectedItem().toString();
+        String season = spinner_season.getSelectedItem().toString();
         String brand = edit_brand.getText().toString();
         String state = spinner_state.getSelectedItem().toString();
         String color = spinner_color.getSelectedItem().toString();
@@ -119,12 +119,12 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
             filter.append("color = ?");
             filterValues.add(color);
         }
-        if(!material.equals("전체")) {
+        if(!season.equals("전체")) {
             if(filter.length() > 0) {
                 filter.append(" AND ");
             }
-            filter.append("material = ?");
-            filterValues.add(material);
+            filter.append("season = ?");
+            filterValues.add(season);
         }
         if(!brand.equals("")) {
             if(filter.length() > 0) {
@@ -216,7 +216,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         Intent intent = getIntent();
         String actionRequest = intent.getStringExtra("ACTION_REQUEST");
         String[] sArray = {};
-        StringBuilder str;
+        String str;
         String query = "";
 
         if(filter.equals("")){
@@ -228,53 +228,23 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                     break;
                 case "TAKE_OUT":
                     spinner_state.setVisibility(View.INVISIBLE);
-                    if(month >= 9 || (month >= 1 && month <= 2 )) {
-                        List<String> winter_materials = Arrays.asList(getResources().getStringArray(R.array.winter_material_array));
-                        List<String> list = new ArrayList<>();
-                        for (String e : winter_materials) {
-                            list.add(e);
-                            list.add("정리");
-                            list.add("정리");
-                        }
-                        sArray = new String[list.size()];
-                        sArray = list.toArray(sArray);
-                        str = new StringBuilder(100);
-                        for (int idx = 0; idx < winter_materials.size(); idx++) {
-                            if (idx > 0) {
-                                str.append(" OR ");
-                            }
-                            str.append("((material = ? AND state = ?) AND (worn BETWEEN " + time + " AND " + System.currentTimeMillis() + " AND state = ?))");
-                        }
-                        query = "SELECT * FROM wardrobe WHERE " + str.toString();
+                    if(month >= 9 || (month >= 1 && month <= 2 )){
+                        sArray = new String[]{"FW", "정리"};
+                        str = "((season = ? AND state = ?) AND (worn BETWEEN " + time + " AND " + System.currentTimeMillis() + "))";
+                        query = "SELECT * FROM wardrobe WHERE " + str;
                     }
                     break;
                 case "PUT_AWAY":
                     spinner_state.setVisibility(View.INVISIBLE);
                     long start = 86400000L;
                     if(month >= 4 && month <= 8){
-                        List<String> winter_materials = Arrays.asList(getResources().getStringArray(R.array.winter_material_array));
-                        List<String> list = new ArrayList<>();
-                        for(String e:winter_materials){
-                            list.add(e);
-                            list.add("옷장");
-                            list.add("옷장");
-                        }
-                        sArray = new String[list.size()];
-                        sArray = list.toArray(sArray);
-                        str = new StringBuilder(100);
-                        for (int idx=0; idx<winter_materials.size(); idx++) {
-                            if(idx>0){
-                                str.append(" OR ");
-                            }
-                            str.append("((material = ? AND state = ?) OR (worn BETWEEN " + start + " AND " + time + " AND state = ?))");
-                        }
-                        query = "SELECT * FROM wardrobe WHERE " + str.toString();
+                        sArray = new String[]{"FW", "옷장", "옷장"};
+                        str = "((season = ? AND state = ?) OR (worn BETWEEN " + start + " AND " + time + " AND state = ?))";
+                        query = "SELECT * FROM wardrobe WHERE " + str;
                     }else{
-                        sArray = new String[1];
-                        sArray[0] = "옷장";
-                        str = new StringBuilder(100);
-                        str.append("worn BETWEEN " + start + " AND " + time + " AND state = ?");
-                        query = "SELECT * FROM wardrobe WHERE " + str.toString();
+                        sArray = new String[]{"옷장"};
+                        str = "worn BETWEEN " + start + " AND " + time + " AND state = ?";
+                        query = "SELECT * FROM wardrobe WHERE " + str;
                     }
                     break;
             }
@@ -286,8 +256,8 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         cursor = db.rawQuery(query, sArray);
         startManagingCursor(cursor);
 
-        String[] from = {"category", "material", "brand", "state", "image", "color", "worn"};
-        int[] to = {R.id.category, R.id.material, R.id.brand, R.id.state, R.id.image, R.id.color, R.id.worn};
+        String[] from = {"image"};
+        int[] to = {R.id.image};
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.list_item, cursor, from, to);
@@ -306,7 +276,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                 if (cursor.moveToFirst()) {
                     String rowId = cursor.getString(cursor.getColumnIndex("_id"));
                     String category = cursor.getString(cursor.getColumnIndex("category"));
-                    String material = cursor.getString(cursor.getColumnIndex("material"));
+                    String season = cursor.getString(cursor.getColumnIndex("season"));
                     String brand = cursor.getString(cursor.getColumnIndex("brand"));
                     String state = cursor.getString(cursor.getColumnIndex("state"));
                     String image = cursor.getString(cursor.getColumnIndex("image"));
@@ -314,7 +284,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                     long worn = cursor.getLong(cursor.getColumnIndex("worn"));
                     intent.putExtra("ID", rowId);
                     intent.putExtra("CATEGORY", category);
-                    intent.putExtra("MATERIAL", material);
+                    intent.putExtra("SEASON", season);
                     intent.putExtra("BRAND", brand);
                     intent.putExtra("STATE", state);
                     intent.putExtra("IMAGE", image);
@@ -343,14 +313,14 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner_category.setAdapter(arrayAdapter);
     }
 
-    private void populateSpinnerMaterial() {
-        List<String> materials = new ArrayList<>();
-        materials.add(0, "전체");
-        materials.addAll(Arrays.asList(getResources().getStringArray(R.array.material_array)));
-        materials.addAll(Arrays.asList(getResources().getStringArray(R.array.winter_material_array)));
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, materials);
+    private void populateSpinnerSeason() {
+        List<String> seasons = new ArrayList<>();
+        seasons.add(0, "전체");
+        seasons.addAll(Arrays.asList(getResources().getStringArray(R.array.season_array)));
+        seasons.addAll(Arrays.asList(getResources().getStringArray(R.array.season_array)));
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, seasons);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_material.setAdapter(arrayAdapter);
+        spinner_season.setAdapter(arrayAdapter);
     }
 
     private void populateSpinnerState() {
@@ -379,7 +349,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                 case "CREATE":
                     db.execSQL("INSERT INTO wardrobe VALUES (null, " +
                             "'" + data.getStringExtra("INPUT_CATEGORY") + "', " +
-                            "'" + data.getStringExtra("INPUT_MATERIAL") + "', " +
+                            "'" + data.getStringExtra("INPUT_SEASON") + "', " +
                             "'" + data.getStringExtra("INPUT_BRAND") + "', " +
                             "'" + data.getStringExtra("INPUT_STATE") + "', " +
                             "'" + data.getStringExtra("INPUT_IMAGE") + "', " +
@@ -391,7 +361,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                 case "UPDATE":
                     db.execSQL("UPDATE wardrobe SET " +
                             "category = '" + data.getStringExtra("INPUT_CATEGORY") + "', " +
-                            "material = '" + data.getStringExtra("INPUT_MATERIAL") + "', " +
+                            "season = '" + data.getStringExtra("INPUT_SEASON") + "', " +
                             "brand = '" + data.getStringExtra("INPUT_BRAND") + "', " +
                             "state = '" + data.getStringExtra("INPUT_STATE") + "', " +
                             "image = '" + data.getStringExtra("INPUT_IMAGE") + "', " +
@@ -435,7 +405,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                 String selected = parent.getSelectedItem().toString();
             }
         }
-        else if(parent.getId() == R.id.spinner_material){
+        else if(parent.getId() == R.id.spinner_season){
             if(!parent.getItemAtPosition(i).equals("전체")) {
                 String selected = parent.getSelectedItem().toString();
             }
