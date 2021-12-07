@@ -249,7 +249,7 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                     break;
                 case "PUT_AWAY":
                     spinner_state.setVisibility(View.GONE);
-                    textDate.setVisibility(View.GONE);
+                    textState.setVisibility(View.GONE);
                     long start = 86400000L;
                     if(month >= 4 && month <= 8){
                         sArray = new String[]{"FW", "옷장", "옷장"};
@@ -466,6 +466,9 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                     break;
                 case "검정":
                     color_img.setBackgroundResource(R.color.black);
+                    break;
+                default:
+                    color_img.setBackgroundResource(R.color.white);
                     break;
             }
         }

@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         }
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, id);
 
-        notificationBuilder.setSmallIcon(R.drawable.ic_launcher_foreground);
+        notificationBuilder.setSmallIcon(R.drawable.hanger);
         notificationBuilder.setContentTitle(title);
         notificationBuilder.setContentText(message);
         notificationBuilder.setContentIntent(pendingIntent);
