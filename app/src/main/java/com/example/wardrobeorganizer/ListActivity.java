@@ -21,8 +21,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +43,8 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
     Spinner spinner_category, spinner_season, spinner_state, spinner_color, spinner_date;
     Button btnSearch, btnClear;
     List<String> filterValues;
+    TextView textDate, textState;
+    ImageView color_img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +57,21 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner_season = findViewById(R.id.spinner_season);
         spinner_state = findViewById(R.id.spinner_state);
         spinner_date = findViewById(R.id.spinner_date);
+        textDate = findViewById(R.id.text_date);
+        textState = findViewById(R.id.text_state);
         populateSpinnerColor();
         populateSpinnerCategory();
         populateSpinnerSeason();
         populateSpinnerState();
         populateSpinnerDate();
+        spinner_category.setOnItemSelectedListener(this);
+        spinner_season.setOnItemSelectedListener(this);
+        spinner_state.setOnItemSelectedListener(this);
+        spinner_color.setOnItemSelectedListener(this);
         edit_brand = findViewById(R.id.edit_brand);
         btnSearch= findViewById(R.id.button_search);
         btnClear = findViewById(R.id.button_clear);
+        color_img = findViewById(R.id.color_image);
 
         btnSearch.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -223,11 +234,13 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
             switch (actionRequest) {
                 case "VIEW":
                     spinner_state.setVisibility(View.VISIBLE);
+                    textState.setVisibility(View.VISIBLE);
                     query = "SELECT * FROM wardrobe";
                     sArray = null;
                     break;
                 case "TAKE_OUT":
-                    spinner_state.setVisibility(View.INVISIBLE);
+                    spinner_state.setVisibility(View.GONE);
+                    textState.setVisibility(View.GONE);
                     if(month >= 9 || (month >= 1 && month <= 2 )){
                         sArray = new String[]{"FW", "정리"};
                         str = "((season = ? AND state = ?) AND (worn BETWEEN " + time + " AND " + System.currentTimeMillis() + "))";
@@ -235,7 +248,8 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                     }
                     break;
                 case "PUT_AWAY":
-                    spinner_state.setVisibility(View.INVISIBLE);
+                    spinner_state.setVisibility(View.GONE);
+                    textDate.setVisibility(View.GONE);
                     long start = 86400000L;
                     if(month >= 4 && month <= 8){
                         sArray = new String[]{"FW", "옷장", "옷장"};
@@ -316,7 +330,6 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
     private void populateSpinnerSeason() {
         List<String> seasons = new ArrayList<>();
         seasons.add(0, "전체");
-        seasons.addAll(Arrays.asList(getResources().getStringArray(R.array.season_array)));
         seasons.addAll(Arrays.asList(getResources().getStringArray(R.array.season_array)));
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, seasons);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -413,6 +426,47 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
         else if(parent.getId() == R.id.spinner_state){
             if(!parent.getItemAtPosition(i).equals("전체")) {
                 String selected = parent.getSelectedItem().toString();
+            }
+        }
+        else if(parent.getId() == R.id.spinner_color){
+            String selected = parent.getSelectedItem().toString();
+            switch(selected){
+                case "하양":
+                    color_img.setBackgroundResource(R.color.white);
+                    break;
+                case "빨강":
+                    color_img.setBackgroundResource(R.color.red);
+                    break;
+                case "파랑":
+                    color_img.setBackgroundResource(R.color.blue);
+                    break;
+                case "초록":
+                    color_img.setBackgroundResource(R.color.green);
+                    break;
+                case "노랑":
+                    color_img.setBackgroundResource(R.color.yellow);
+                    break;
+                case "주황":
+                    color_img.setBackgroundResource(R.color.orange);
+                    break;
+                case "갈색":
+                    color_img.setBackgroundResource(R.color.brown);
+                    break;
+                case "분홍":
+                    color_img.setBackgroundResource(R.color.pink);
+                    break;
+                case "보라":
+                    color_img.setBackgroundResource(R.color.purple_200);
+                    break;
+                case "남색":
+                    color_img.setBackgroundResource(R.color.navy);
+                    break;
+                case "회색":
+                    color_img.setBackgroundResource(R.color.gray);
+                    break;
+                case "검정":
+                    color_img.setBackgroundResource(R.color.black);
+                    break;
             }
         }
     }

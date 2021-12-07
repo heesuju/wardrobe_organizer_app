@@ -6,6 +6,8 @@
     <string name="btn_view">VIEW</string>
     <string name="btn_take_out">TAKE OUT</string>
     <string name="btn_put_away">PUT AWAY</string>
+    <string name="btn_search">조회</string>
+    <string name="btn_clear">초기화</string>
     <string name="develop_desc">DEVELOPED BY</string>
     <string name="author">HEESU JU</string>
 
