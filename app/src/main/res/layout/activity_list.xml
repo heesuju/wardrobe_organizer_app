@@ -15,7 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="10dp"
+            android:paddingStart="10dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,91 +36,65 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="10dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="색상"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_weight="1"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+
+                android:paddingStart="10dp">
                 <ImageView
                     android:id="@+id/color_image"
                     android:layout_width="25dp"
                     android:layout_height="match_parent"
-                    android:background="@color/white"
-                    android:layout_marginEnd="20dp"/>
+                    android:background="@color/white"/>
                 <Spinner
                     android:id="@+id/spinner_color"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAlignment="center"/>
             </LinearLayout>
-            <TextView
-                android:id="@+id/text_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/worn"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_weight="1"/>
             <Spinner
                 android:id="@+id/spinner_date"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:textAlignment="center"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="10dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/category"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_weight="1"/>
             <Spinner
                 android:id="@+id/spinner_category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/season"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:textAlignment="center"/>
             <Spinner
                 android:id="@+id/spinner_season"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:textAlignment="center"/>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="10dp">
-            <TextView
-                android:id="@+id/text_state"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/state"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_weight="3"/>
             <Spinner
                 android:id="@+id/spinner_state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:textAlignment="center"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+            </ImageView>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -157,6 +132,8 @@
             android:numColumns="3"
             android:stretchMode="columnWidth"
             android:layout_gravity="center"
+            android:verticalSpacing="20dp"
+            android:horizontalSpacing="20dp"
             android:scrollbars="none"/>
     </LinearLayout>
 
