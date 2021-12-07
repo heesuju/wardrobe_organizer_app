@@ -15,8 +15,8 @@
         android:layout_marginBottom="20dp">
         <ImageView
             android:id="@+id/image"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
             android:scaleType="fitXY"
             android:background="@color/white"/>
         <LinearLayout
@@ -34,7 +34,8 @@
                 android:src="@drawable/camera_icon"
                 android:scaleType="fitCenter"
                 android:backgroundTint="@color/pink"
-                android:padding="22dp"/>
+                android:padding="22dp"
+                android:layout_marginBottom="10dp"/>
             <ImageButton
                 android:id="@+id/button_album"
                 android:layout_width="match_parent"
@@ -43,7 +44,7 @@
                 android:contentDescription="Open Album"
                 android:src="@drawable/album_icon"
                 android:scaleType="fitCenter"
-                android:backgroundTint="@color/brown"
+                android:backgroundTint="@color/sky_blue"
                 android:padding="20dp"/>
         </LinearLayout>
     </LinearLayout>
@@ -71,13 +72,13 @@
                 android:id="@+id/edit_brand"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/white"/>
+                android:layout_weight="1" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -86,66 +87,97 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:gravity="center_vertical"/>
-            <Spinner
-                android:id="@+id/spinner_color"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:backgroundTint="@color/white"/>
+                android:layout_weight="1">
+                <ImageView
+                    android:id="@+id/color_image"
+                    android:layout_width="25dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:layout_marginEnd="20dp"/>
+                <Spinner
+                    android:id="@+id/spinner_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAlignment="center"/>
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/category"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/category"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_weight="2"/>
             <Spinner
                 android:id="@+id/spinner_category"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/material" />
+                android:text="@string/material"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_weight="2"/>
             <Spinner
                 android:id="@+id/spinner_material"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
             <TextView
                 android:id="@+id/label_state"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/state" />
+                android:text="@string/state"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_weight="2"/>
             <Spinner
                 android:id="@+id/spinner_state"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/label_worn"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="마지막 입은 날짜" />
+                android:text="입은날짜"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_weight="2"/>
             <TextView
                 android:id="@+id/text_worn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="" />
+                android:layout_height="match_parent"
+                android:text=""
+                android:layout_weight="1"
+                android:textSize="16sp"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -157,25 +189,55 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="입기" />
+                android:text="입기"
+                android:backgroundTint="@color/sky_blue"
+                android:layout_marginEnd="10dp"/>
             <Button
                 android:id="@+id/button_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/save" />
+                android:text="@string/save"
+                android:backgroundTint="@color/sky_blue"
+                android:layout_marginEnd="10dp"/>
             <Button
                 android:id="@+id/button_update"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="갱신" />
+                android:text="수정"
+                android:backgroundTint="@color/gray"
+                android:layout_marginEnd="10dp"/>
+            <Button
+                android:id="@+id/button_take_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="옷장"
+                android:backgroundTint="@color/brown"
+                android:layout_marginEnd="10dp"/>
+            <Button
+                android:id="@+id/button_put_away"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="정리"
+                android:backgroundTint="@color/brown"
+                android:layout_marginEnd="10dp"/>
             <Button
                 android:id="@+id/button_delete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="폐기" />
+                android:text="폐기"
+                android:backgroundTint="@color/pink"/>
+            <Button
+                android:id="@+id/button_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="취소"
+                android:backgroundTint="@color/pink"/>
         </LinearLayout>
     </LinearLayout>
 

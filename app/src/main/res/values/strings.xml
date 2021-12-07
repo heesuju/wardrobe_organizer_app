@@ -18,6 +18,7 @@
     <string name="cancel">취소</string>
 
     <string-array name="color_array">
+        <item>화이트</item>
         <item>레드</item>
         <item>블루</item>
         <item>그린</item>

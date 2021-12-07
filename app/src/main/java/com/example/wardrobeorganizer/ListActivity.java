@@ -408,6 +408,14 @@ public class ListActivity extends AppCompatActivity implements AdapterView.OnIte
                     );
                     printDb();
                     break;
+                case "MOVE":
+                    db.execSQL("UPDATE wardrobe SET " +
+                            "state = '" + data.getStringExtra("INPUT_STATE") + "' " +
+                            "WHERE _id = '" + data.getStringExtra("ID") + "';"
+                    );
+                    printDb();
+                    break;
+
                 case "DELETE":
                     db.execSQL("DELETE FROM wardrobe WHERE _id = " +
                             "'" + data.getStringExtra("ID") + "';"

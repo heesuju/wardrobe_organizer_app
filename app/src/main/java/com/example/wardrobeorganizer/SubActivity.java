@@ -56,8 +56,8 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
     String filePath;
     Spinner spinner_category, spinner_material, spinner_state, spinner_color;
     ImageButton btnCamera, btnAlbum;
-    Button btnWear;
-    ImageView image;
+    Button btnWear, btnTakeOut, btnPutAway, btnCancel;
+    ImageView image, color_img;
     TextView text_worn, label_worn, label_state;
     long date_time;
     DatabaseHelper helper;
@@ -84,7 +84,12 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
 
         btnAlbum = findViewById(R.id.button_album);
         btnCamera = findViewById(R.id.button_camera);
+        btnTakeOut = findViewById(R.id.button_take_out);
+        btnPutAway = findViewById(R.id.button_put_away);
+        btnCancel = findViewById(R.id.button_cancel);
+
         image = findViewById(R.id.image);
+        color_img = findViewById(R.id.color_image);
         populateSpinnerColor();
         populateSpinnerCategory();
         populateSpinnerMaterial();
@@ -92,6 +97,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         spinner_category.setOnItemSelectedListener(this);
         spinner_material.setOnItemSelectedListener(this);
         spinner_state.setOnItemSelectedListener(this);
+        spinner_color.setOnItemSelectedListener(this);
 
         helper = new DatabaseHelper(this);
         try {
@@ -99,7 +105,6 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         } catch (SQLiteException ex) {
             db = helper.getReadableDatabase();
         }
-
 
         Button buttonSave = (Button) findViewById(R.id.button_save);
         Button buttonUpdate = (Button) findViewById(R.id.button_update);
@@ -116,6 +121,9 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 btnWear.setVisibility(View.GONE);
                 text_worn.setVisibility(View.GONE);
                 label_worn.setVisibility(View.GONE);
+                btnTakeOut.setVisibility(View.GONE);
+                btnPutAway.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.VISIBLE);
                 break;
             case "UPDATE":
                 buttonSave.setVisibility(View.GONE);
@@ -125,6 +133,7 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 text_worn.setVisibility(View.VISIBLE);
                 label_state.setVisibility(View.GONE);
                 spinner_state.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
 
                 id = intent.getStringExtra("ID");
                 spinner_category.setSelection(((ArrayAdapter)spinner_category.getAdapter()).getPosition(intent.getStringExtra("CATEGORY")));
@@ -138,6 +147,13 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 filePath = intent.getStringExtra("IMAGE");
                 Bitmap bitmap = BitmapFactory.decodeFile(intent.getStringExtra("IMAGE"));
                 image.setImageBitmap(bitmap);
+                if(intent.getStringExtra("STATE").equals("정리")){
+                    btnTakeOut.setVisibility(View.VISIBLE);
+                    btnPutAway.setVisibility(View.GONE);
+                }else{
+                    btnTakeOut.setVisibility(View.GONE);
+                    btnPutAway.setVisibility(View.VISIBLE);
+                }
                 break;
         }
         btnAlbum.setOnClickListener(new View.OnClickListener() {
@@ -224,6 +240,34 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
                 intent.putExtra("ID", id);
                 intent.putExtra("INPUT_WORN", System.currentTimeMillis());
                 setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+        btnTakeOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.putExtra("ACTION_RESULT", "MOVE");
+                intent.putExtra("ID", id);
+                intent.putExtra("INPUT_STATE", "옷장");
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+        btnPutAway.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.putExtra("ACTION_RESULT", "MOVE");
+                intent.putExtra("ID", id);
+                intent.putExtra("INPUT_STATE", "정리");
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 finish();
             }
         });
@@ -377,6 +421,44 @@ public class SubActivity extends AppCompatActivity implements AdapterView.OnItem
         }
         else if(parent.getId() == R.id.spinner_color){
             String selected = parent.getSelectedItem().toString();
+            switch(selected){
+                case "화이트":
+                    color_img.setBackgroundResource(R.color.white);
+                    break;
+                case "레드":
+                    color_img.setBackgroundResource(R.color.red);
+                    break;
+                case "블루":
+                    color_img.setBackgroundResource(R.color.blue);
+                    break;
+                case "그린":
+                    color_img.setBackgroundResource(R.color.green);
+                    break;
+                case "옐로우":
+                    color_img.setBackgroundResource(R.color.yellow);
+                    break;
+                case "오렌지":
+                    color_img.setBackgroundResource(R.color.orange);
+                    break;
+                case "브라운":
+                    color_img.setBackgroundResource(R.color.brown);
+                    break;
+                case "핑크":
+                    color_img.setBackgroundResource(R.color.pink);
+                    break;
+                case "퍼플":
+                    color_img.setBackgroundResource(R.color.purple_200);
+                    break;
+                case "네이비":
+                    color_img.setBackgroundResource(R.color.navy);
+                    break;
+                case "그레이":
+                    color_img.setBackgroundResource(R.color.gray);
+                    break;
+                case "블랙":
+                    color_img.setBackgroundResource(R.color.black);
+                    break;
+            }
         }
     }
 
